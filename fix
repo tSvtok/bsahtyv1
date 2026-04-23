@@ -1,35 +1,167 @@
-# B-SSAHTY Production Fixes & Integration Log
+ISSUES TO FIX
+=============
 
-The following critical issues were resolved to achieve full production readiness:
+BACKEND FIXES:
+=============
+1. Database Issues
+   - Spots table missing latitude/longitude fields in API responses - ✅ FIXED
+   - PostGIS coordinates not properly exposed in Spot model - ✅ FIXED
+   - Missing indexes on frequently queried fields
+   - Foreign key constraints may cause issues
 
-## 1. Database & Backend
-- **Fixed**: Missing `personal_access_tokens` table. Ran migrations to ensure Sanctum compatibility.
-- **Fixed**: Not-null constraint violation on `questions` table. Updated frontend to send `title` and `sport_category`.
-- **Configured**: Laravel 12 API is now successfully responding to registration and question queries.
+2. API Response Issues
+   - Inconsistent response formats across endpoints
+   - Missing error handling for edge cases
+   - No proper HTTP status codes for all scenarios
+   - Pagination metadata not fully utilized in frontend
 
-## 2. Frontend Stability (Anti-Crash)
-- **Fixed**: Unhandled setup errors in `CreatePostModal.vue` due to missing `ref`/`reactive` imports.
-- **Fixed**: Direct property access in `AppSidebar.vue` and `ProfilePage.vue`. Added optional chaining (`?.`) to all `userStore.currentUser` accesses to prevent crashes before login.
-- **Fixed**: Property name mismatch in `EditProfileModal.vue` (`userStore.user` -> `userStore.currentUser`).
+3. Authentication Issues
+   - Token expiration not handled properly
+   - No refresh token mechanism
+   - Password hashing configuration
+   - Sanctum configuration may need tuning
 
-## 3. API Integration
-- **AuthService**: Corrected token key from `token` to `access_token` to match Laravel 12/Sanctum response.
-- **PostService**: Switched from `/posts` to `/questions` and mapped parameters to match backend schema.
-- **EventService**: Added `create` method and mapped fields for match organization.
-- **UserStore**: Added `setUser` and `updateUser` actions to synchronize real-time API data with Pinia state.
+4. Model Issues
+   - Some relationships may be missing inverse relationships
+   - Polymorphic relationships need proper setup
+   - Enum casting may have issues
+   - Soft deletes not implemented where needed
 
-## 4. UI/UX Refinement
-- **FeedPage**: Now fetches real questions from the backend with a seamless transition from skeleton loaders.
-- **EventsPage**: Connected to the real events list with support for backend data mapping.
-- **Login/Register**: Fully functional flows that redirect users to their personalized feed upon success.
+5. Controller Issues
+   - Missing validation for all input parameters
+   - No proper authorization checks in some endpoints
+   - Error responses not standardized
+   - Missing request/response logging
 
-## 5. Frontend Standardization & Backend Schema Expansion
-- **Unified Navigation**: Standardized `Navbar` and `AppSidebar` across all main pages (Feed, Map, Events, Profile, Messages).
-- **Design System**: Implemented global `.btn-primary`, `.btn-secondary`, and `.card` utility classes in `style.css` for consistent premium look.
-- **Backend Schema**: Expanded `events` table with `title`, `sport`, `location`, and `image` fields to support real frontend data.
-- **Backend Schema**: Added `image` field to `questions` table to support post images.
-- **Validation**: Updated `StoreEventRequest` and `StoreQuestionRequest` to enforce new schema requirements.
-- **UI Consistency**: Replaced ad-hoc button and card styles with design system utilities across all components and modals.
-- **Layout Alignment**: Fixed `Navbar` height and fixed positioning to ensure perfect alignment with `AppSidebar`.
+FRONTEND FIXES:
+==============
+1. Map Issues
+   - Leaflet map not loading spots correctly (missing lat/lng)
+   - Geolocation not working properly
+   - Map markers not interactive
+   - No spot creation functionality
 
-**System Status: Production Ready & Standardized (Frontend -> Dockerized Laravel API -> PostgreSQL)**
+2. UI/UX Issues
+   - Mobile responsiveness not fully implemented
+   - Loading states missing in many places
+   - Error handling UI incomplete
+   - Form validation feedback inadequate
+
+3. Component Issues
+   - PostCard like functionality may not work (API mismatch)
+   - Comment system incomplete
+   - Image upload not implemented
+   - Date formatting inconsistent
+
+4. State Management Issues
+   - Some API responses not properly handled
+   - Loading states not managed everywhere
+   - Error states not displayed to users
+   - Cache invalidation missing
+
+5. Routing Issues
+   - Some routes may not be protected properly
+   - Route guards may have edge cases
+   - Navigation not smooth
+
+6. Styling Issues
+   - Color consistency across components
+   - Dark mode not implemented
+   - Animation performance
+   - Accessibility compliance
+
+DATA FIXES:
+==========
+1. Seed Data Issues
+   - No realistic test data
+   - Missing relationships between entities
+   - No geographic data for testing map features
+   - User roles not properly seeded
+
+2. Database Issues
+   - Missing constraints
+   - Data integrity issues
+   - Performance optimization needed
+
+INFRASTRUCTURE FIXES:
+====================
+1. Docker Issues
+   - Container networking may have issues
+   - Volume permissions
+   - Environment variable handling
+   - Development vs production configs
+
+2. Build Issues
+   - Frontend build optimization
+   - Asset optimization
+   - Bundle size reduction
+   - Code splitting
+
+3. Performance Issues
+   - API response times
+   - Database query optimization
+   - Frontend bundle size
+   - Image optimization
+
+SECURITY FIXES:
+==============
+1. Input Validation
+   - SQL injection prevention
+   - XSS protection
+   - CSRF protection
+   - File upload security
+
+2. Authentication
+   - Password policies
+   - Account lockout
+   - Session management
+   - Token security
+
+3. API Security
+   - Rate limiting
+   - Request validation
+   - Error information leakage
+   - CORS configuration
+
+TESTING FIXES:
+=============
+1. Unit Tests
+   - Model tests
+   - Service tests
+   - Utility function tests
+
+2. Integration Tests
+   - API endpoint tests
+   - Database integration tests
+   - External service integration
+
+3. E2E Tests
+   - User journey tests
+   - Critical path testing
+   - Cross-browser testing
+
+4. Performance Tests
+   - Load testing
+   - Stress testing
+   - Memory leak detection
+
+ACCESSIBILITY FIXES:
+===================
+1. Keyboard Navigation
+   - Tab order
+   - Keyboard shortcuts
+   - Focus management
+
+2. Screen Reader Support
+   - ARIA labels
+   - Semantic HTML
+   - Alt text for images
+
+3. Color Contrast
+   - WCAG compliance
+   - Color blindness considerations
+
+4. Responsive Design
+   - Mobile-first approach
+   - Touch targets
+   - Flexible layouts

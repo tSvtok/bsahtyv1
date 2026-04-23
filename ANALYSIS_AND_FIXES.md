@@ -143,6 +143,39 @@
 
 ---
 
+### Phase 2-4: Social, Admin & Real-time (New)
+
+#### 1. Social Features & Friendship Flow
+- Implemented full friendship lifecycle (Request, Accept, Delete)
+- Added `FriendshipStatus` enum for type safety
+- Updated `ProfilePage.vue` with dynamic user loading and friendship actions
+- **Result:** Fully functional social networking features
+
+#### 2. Admin Dashboard & Moderation
+- Created `AdminPage.vue` with live platform stats
+- Implemented spot moderation workflow (Approve/Reject)
+- Added role-based route guards for administrative access
+- **Result:** Robust platform management tools
+
+#### 3. Real-time Notifications (WebSocket)
+- Integrated Laravel Echo and Pusher/Reverb
+- Created a premium global `Toast.vue` notification system
+- Implemented real-time listener for friend requests and messages
+- **Result:** Interactive, alive feel to the application
+
+#### 4. Content Creation Polish
+- Replaced basic URL inputs with robust file upload functionality
+- Added skeleton loading states for perceived performance
+- Created reusable components like `MessageBubble.vue`
+- **Result:** High-end, premium UI/UX
+
+#### 5. Filtering & Search
+- Added sport category filtering to the social feed
+- Updated backend and frontend to handle dynamic query parameters
+- **Result:** Improved content discoverability
+
+---
+
 ## 🚀 Quick Start Guide
 
 ### Prerequisites
@@ -344,6 +377,11 @@ v01_project/
 - [x] Service updates for pagination
 - [x] Environment configuration
 - [x] Comprehensive documentation
+- [x] Real-time messaging & notifications
+- [x] Image upload functionality
+- [x] Admin dashboard & moderation
+- [x] Profile friendship system
+- [x] Feed category filtering
 
 ---
 
