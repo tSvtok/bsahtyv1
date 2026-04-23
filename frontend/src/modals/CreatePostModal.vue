@@ -88,7 +88,7 @@ const auth    = useAuthStore()
 const appStore = useAppStore()
 
 const loading = ref(false)
-const form    = ref({ body: '', image_url: '', sport: '' })
+const form    = ref({ body: '', image_url: '', image_path: '', sport: '' })
 const errors  = ref({})
 
 const myAvatar = computed(() =>
@@ -118,6 +118,7 @@ async function handleFileUpload(e) {
       headers: { 'Content-Type': 'multipart/form-data' }
     })
     form.value.image_url = res.data.url
+    form.value.image_path = res.data.path
   } catch (err) {
     errors.value.body = 'Failed to upload image.'
   } finally {
@@ -132,10 +133,10 @@ async function submit() {
     const payload = {
       content: form.value.body,
       sport_category: form.value.sport ? form.value.sport.toUpperCase() : 'OTHER',
-      image: form.value.image_url
+      image: form.value.image_path
     }
     await appStore.createPost(payload)
-    form.value = { body: '', image_url: '', sport: '' }
+    form.value = { body: '', image_url: '', image_path: '', sport: '' }
     emit('update:modelValue', false)
   } catch (e) {
     errors.value.body = e?.response?.data?.message || 'Failed to post.'

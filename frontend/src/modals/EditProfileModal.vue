@@ -124,7 +124,7 @@ async function submit() {
   loading.value = true
   try {
     const res = await api.put('/me', form.value)
-    auth.user = res.data
+    auth.user = res.data.data
     emit('update:modelValue', false)
   } catch (e) {
     errors.value.general = e?.response?.data?.message || 'Failed to save changes.'
