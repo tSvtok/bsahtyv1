@@ -1,61 +1,122 @@
 <template>
-  <article class="card overflow-hidden group">
-    <router-link :to="'/events/' + event.id">
-      <div class="relative h-56 overflow-hidden">
-        <img :src="event.image" :alt="event.title" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"/>
-        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-        <div class="absolute top-4 right-4 px-3 py-1 bg-white/90 backdrop-blur-md rounded-full text-[10px] font-bold uppercase tracking-widest shadow-sm" :class="event.status === 'Full' ? 'text-slate-400' : 'text-primary'">
-          {{ event.status }}
+  <article class="card p-5 flex flex-col gap-3 cursor-pointer group">
+    <!-- Header row -->
+    <div class="flex items-start justify-between gap-3">
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="text-2xl">{{ sportEmoji }}</span>
+          <span class="badge badge-primary text-xs">{{ event.sport }}</span>
+          <span v-if="event.level" class="badge badge-info text-xs">{{ event.level }}</span>
         </div>
-        <div class="absolute bottom-4 left-4 text-white">
-          <p class="text-[10px] font-bold uppercase tracking-widest opacity-80">{{ event.date }} • {{ event.time }}</p>
-          <h3 class="font-headline text-lg font-bold">{{ event.title }}</h3>
-        </div>
+        <h3 class="font-bold text-base leading-snug group-hover:text-orange-500 transition-colors truncate">{{ event.title }}</h3>
       </div>
-    </router-link>
-    
-    <div class="p-6 space-y-4">
-      <div class="flex items-center gap-2 text-slate-500">
-        <span class="material-symbols-outlined text-lg">location_on</span>
-        <span class="text-xs font-medium">{{ event.location }}</span>
+      <div class="text-right shrink-0">
+        <p class="text-xs font-semibold text-orange-500">{{ formattedDate }}</p>
+        <p class="text-xs text-gray-500">{{ formattedTime }}</p>
       </div>
+    </div>
 
-      <!-- Progress Bar -->
-      <div class="space-y-2">
-        <div class="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider">
-          <span class="text-slate-400">{{ event.participants }}/{{ event.maxParticipants }} Participants</span>
-          <span :class="event.participants >= event.maxParticipants * 0.8 ? 'text-primary' : 'text-slate-400'">
-            {{ event.participants >= event.maxParticipants ? 'Registration Closed' : (event.maxParticipants - event.participants) + ' Slots Left' }}
-          </span>
-        </div>
-        <div class="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-          <div 
-            class="h-full bg-primary transition-all duration-500" 
-            :style="{ width: (event.participants / event.maxParticipants * 100) + '%' }"
-          ></div>
-        </div>
-      </div>
+    <!-- Location -->
+    <div class="flex items-center gap-1.5 text-sm text-gray-500">
+      <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+      </svg>
+      <span class="truncate">{{ event.location }}</span>
+    </div>
 
-      <button 
-        @click="$emit('join', event.id)"
-        :disabled="event.status === 'Full'"
-        class="w-full py-4 rounded-2xl font-bold text-sm transition-all active:scale-95 flex items-center justify-center gap-2"
-        :class="event.status === 'Full' ? 'bg-slate-100 text-slate-400 cursor-not-allowed' : 'bg-slate-50 text-primary hover:bg-primary hover:text-white'"
+    <!-- Participants progress -->
+    <div class="flex flex-col gap-1.5">
+      <div class="flex items-center justify-between text-xs">
+        <span class="text-gray-500 font-medium">{{ participantCount }} / {{ maxParticipants }} players</span>
+        <span :class="isFull ? 'text-red-500' : 'text-green-600'" class="font-semibold">
+          {{ isFull ? 'Full' : `${spotsLeft} spots left` }}
+        </span>
+      </div>
+      <div class="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+        <div
+          class="h-full rounded-full transition-all duration-700"
+          :class="progressColor"
+          :style="{ width: `${progressPct}%` }"
+        />
+      </div>
+    </div>
+
+    <!-- Organizer + action -->
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <img :src="organizerAvatar" class="w-6 h-6 rounded-full object-cover" />
+        <span class="text-xs text-gray-500">by <span class="font-medium text-gray-700">{{ event.organizer?.name || 'Organizer' }}</span></span>
+      </div>
+      <button
+        @click.stop="handleJoin"
+        class="btn-primary !py-1.5 !px-4 !text-xs"
+        :class="{ '!opacity-50 !cursor-not-allowed': isFull }"
+        :disabled="isFull"
       >
-        {{ event.status === 'Full' ? 'FULL HOUSE' : 'JOIN MATCH' }}
-        <span v-if="event.status !== 'Full'" class="material-symbols-outlined text-sm">arrow_forward</span>
+        {{ joined ? 'Joined ✓' : (isFull ? 'Full' : 'Join') }}
       </button>
     </div>
   </article>
 </template>
 
 <script setup>
-defineProps({
-  event: {
-    type: Object,
-    required: true
-  }
+import { ref, computed } from 'vue'
+import { eventsApi } from '@/services/api'
+
+const props = defineProps({ event: { type: Object, required: true } })
+const joined = ref(props.event.is_joined || false)
+
+const sportEmojiMap = {
+  football: '⚽', basketball: '🏀', tennis: '🎾', volleyball: '🏐',
+  swimming: '🏊', running: '🏃', cycling: '🚴', padel: '🎾', default: '🏅'
+}
+
+const sportEmoji = computed(() => sportEmojiMap[props.event.sport?.toLowerCase()] || sportEmojiMap.default)
+const participantCount = computed(() => props.event.participants_count || 0)
+const maxParticipants  = computed(() => props.event.max_participants || 10)
+const spotsLeft   = computed(() => maxParticipants.value - participantCount.value)
+const isFull      = computed(() => spotsLeft.value <= 0)
+const progressPct = computed(() => Math.min(100, (participantCount.value / maxParticipants.value) * 100))
+
+const progressColor = computed(() => {
+  if (progressPct.value >= 90) return 'bg-red-400'
+  if (progressPct.value >= 60) return 'bg-orange-400'
+  return 'bg-green-400'
 })
 
-defineEmits(['join'])
+const organizerAvatar = computed(() =>
+  props.event.organizer?.avatar ||
+  `https://ui-avatars.com/api/?name=${encodeURIComponent(props.event.organizer?.name || 'O')}&background=f97316&color=fff&size=40`
+)
+
+const formattedDate = computed(() => {
+  if (!props.event.date) return ''
+  return new Date(props.event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+})
+
+const formattedTime = computed(() => {
+  if (!props.event.time) return ''
+  return props.event.time.slice(0, 5)
+})
+
+async function handleJoin() {
+  const isJoining = !joined.value
+  if (isJoining && isFull.value) return
+  
+  joined.value = isJoining
+  if (props.event.participants_count !== undefined) {
+    props.event.participants_count += isJoining ? 1 : -1
+  }
+
+  try { 
+    await eventsApi.update(props.event.id, { join: isJoining }) 
+  }
+  catch { 
+    joined.value = !isJoining
+    if (props.event.participants_count !== undefined) {
+      props.event.participants_count += isJoining ? -1 : 1
+    }
+  }
+}
 </script>

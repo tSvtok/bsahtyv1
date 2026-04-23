@@ -1,42 +1,156 @@
 <template>
-  <header class="h-16 bg-white/90 dark:bg-slate-950/90 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800 shadow-sm fixed top-0 left-0 right-0 z-50">
-    <nav class="flex justify-between items-center w-full px-6 h-full max-w-screen-2xl mx-auto font-display antialiased">
-      <div class="flex items-center gap-8">
-        <router-link to="/" class="text-2xl font-black tracking-tighter text-[#FF5C00]">B-SSAHTY</router-link>
-        <div class="hidden md:flex items-center gap-6">
-          <router-link to="/feed" class="text-slate-600 dark:text-slate-400 hover:text-[#FF5C00] transition-colors" active-class="text-[#FF5C00] font-bold border-b-2 border-[#FF5C00] pb-1">Feed</router-link>
-          <router-link to="/map" class="text-slate-600 dark:text-slate-400 hover:text-[#FF5C00] transition-colors" active-class="text-[#FF5C00] font-bold border-b-2 border-[#FF5C00] pb-1">Map</router-link>
-          <router-link to="/events" class="text-slate-600 dark:text-slate-400 hover:text-[#FF5C00] transition-colors" active-class="text-[#FF5C00] font-bold border-b-2 border-[#FF5C00] pb-1">Events</router-link>
-          <router-link to="/messages" class="text-slate-600 dark:text-slate-400 hover:text-[#FF5C00] transition-colors" active-class="text-[#FF5C00] font-bold border-b-2 border-[#FF5C00] pb-1">Messages</router-link>
-        </div>
+  <nav class="fixed top-0 inset-x-0 z-50 h-16 bg-surface/90 backdrop-blur-xl border-b border-border flex items-center px-4 md:px-6 gap-4">
+    <!-- Logo -->
+    <router-link to="/" class="flex items-center gap-2 font-bold text-xl tracking-tight mr-4 shrink-0">
+      <span class="w-8 h-8 rounded-xl bg-gradient-primary flex items-center justify-center text-white text-sm font-black shadow-md">B</span>
+      <span class="hidden sm:inline text-gray-900">B-SSAHTY</span>
+    </router-link>
+
+    <!-- Search Bar -->
+    <div class="flex-1 max-w-md hidden md:block">
+      <div class="relative">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <input
+          v-model="search"
+          type="text"
+          placeholder="Search athletes, events, spots..."
+          class="w-full pl-9 pr-4 py-2 bg-gray-100 rounded-full text-sm border-none outline-none focus:bg-white focus:ring-2 focus:ring-orange-400/30 transition-all"
+        />
       </div>
-      
-      <div class="flex items-center gap-4">
-        <div class="relative hidden sm:block">
-          <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
-          <input class="pl-10 pr-4 py-2 bg-slate-100 border-none rounded-full text-sm w-64 focus:ring-2 focus:ring-[#FF5C00] transition-all" placeholder="Search athletes..." type="text"/>
+    </div>
+
+    <div class="flex-1" />
+
+    <!-- Nav Links (desktop) -->
+    <div v-if="auth.isLoggedIn" class="hidden md:flex items-center gap-1">
+      <router-link v-for="link in navLinks" :key="link.to" :to="link.to" class="nav-link" :class="{ active: $route.path === link.to }">
+        <component :is="link.icon" class="w-5 h-5" />
+        <span class="text-sm font-medium">{{ link.label }}</span>
+      </router-link>
+    </div>
+
+    <!-- Right actions -->
+    <div class="flex items-center gap-2 ml-2">
+      <!-- Mobile menu button -->
+      <button v-if="auth.isLoggedIn" @click="showMobileMenu = !showMobileMenu" class="lg:hidden w-9 h-9 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors">
+        <svg class="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path v-if="!showMobileMenu" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <!-- Notifications -->
+      <button v-if="auth.isLoggedIn" class="relative w-9 h-9 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors">
+        <svg class="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+        </svg>
+        <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-orange-500 rounded-full ring-2 ring-white"></span>
+      </button>
+
+      <!-- Avatar / Auth buttons -->
+      <template v-if="auth.isLoggedIn">
+        <router-link to="/profile">
+          <img :src="avatar" :alt="auth.user?.name" class="w-9 h-9 rounded-full object-cover ring-2 ring-orange-500/30 hover:ring-orange-500 transition-all cursor-pointer" />
+        </router-link>
+      </template>
+      <template v-else>
+        <router-link to="/login"  class="btn-secondary !py-1.5 !px-4 !text-sm">Login</router-link>
+        <router-link to="/register" class="btn-primary !py-1.5 !px-4 !text-sm">Join Free</router-link>
+      </template>
+    </div>
+
+    <!-- Mobile menu -->
+    <div v-if="showMobileMenu && auth.isLoggedIn" class="lg:hidden absolute top-16 left-0 right-0 bg-surface border-b border-border shadow-lg">
+      <nav class="flex flex-col py-2">
+        <router-link
+          v-for="link in navLinks" :key="link.to"
+          :to="link.to"
+          @click="showMobileMenu = false"
+          class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors"
+          :class="{ 'bg-orange-50 text-orange-600': $route.path === link.to }"
+        >
+          <span class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center" :class="$route.path === link.to ? 'bg-orange-500 text-white' : ''">
+            <span v-html="link.icon" class="w-5 h-5 [&>svg]:w-5 [&>svg]:h-5"></span>
+          </span>
+          <span class="font-medium">{{ link.label }}</span>
+        </router-link>
+        <div class="border-t border-gray-100 mt-2 pt-2">
+          <router-link to="/profile" @click="showMobileMenu = false" class="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors">
+            <span class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+            </span>
+            <span class="font-medium">Profile</span>
+          </router-link>
+          <button @click="handleLogout" class="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 transition-colors">
+            <span class="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+            </span>
+            <span class="font-medium">Logout</span>
+          </button>
         </div>
-        
-        <div class="flex items-center gap-2">
-          <router-link to="/messages" class="material-symbols-outlined text-slate-500 p-2 hover:bg-slate-50 rounded-full transition-all active:scale-95 duration-200">chat</router-link>
-          <button class="material-symbols-outlined text-slate-500 p-2 hover:bg-slate-50 rounded-full transition-all active:scale-95 duration-200">notifications</button>
-          <template v-if="userStore.currentUser">
-            <button class="hidden lg:block btn-primary px-8 py-2.5">Create</button>
-            <router-link to="/profile" class="h-9 w-9 rounded-full border-2 border-primary overflow-hidden ml-2 active:scale-95 transition-transform">
-              <img :alt="userStore.currentUser?.name" class="w-full h-full object-cover" :src="userStore.currentUser?.avatar"/>
-            </router-link>
-          </template>
-          <template v-else>
-            <router-link to="/login" class="btn-primary px-8 py-2.5">Login</router-link>
-          </template>
-        </div>
-      </div>
-    </nav>
-  </header>
+      </nav>
+    </div>
+  </nav>
 </template>
 
 <script setup>
-import { useUserStore } from '../stores/user'
+import { ref, computed } from 'vue'
+import { useAuthStore } from '@/stores/auth'
+import { useRouter } from 'vue-router'
 
-const userStore = useUserStore()
+const auth = useAuthStore()
+const router = useRouter()
+const search = ref('')
+const showMobileMenu = ref(false)
+
+const avatar = computed(() =>
+  auth.user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(auth.user?.name || 'A')}&background=f97316&color=fff`
+)
+
+const handleLogout = async () => {
+  try {
+    await auth.logout()
+    showMobileMenu.value = false
+    router.push('/login')
+  } catch (error) {
+    console.error('Logout failed:', error)
+  }
+}
+
+const navLinks = [
+  {
+    to: '/feed', label: 'Feed',
+    icon: { template: `<svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>` }
+  },
+  {
+    to: '/map', label: 'Map',
+    icon: { template: `<svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" /></svg>` }
+  },
+  {
+    to: '/events', label: 'Events',
+    icon: { template: `<svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>` }
+  },
+  {
+    to: '/messages', label: 'Messages',
+    icon: { template: `<svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>` }
+  },
+]
 </script>
+
+<style scoped>
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.4rem 0.875rem;
+  border-radius: 9999px;
+  color: #6b7280;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+.nav-link:hover { background: #f3f4f6; color: #111827; }
+.nav-link.active { background: rgba(249,115,22,0.1); color: #ea580c; }
+</style>
