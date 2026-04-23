@@ -21,45 +21,73 @@
           </div>
         </div>
 
-        <div class="flex flex-col lg:flex-row flex-1 overflow-hidden" style="min-height: calc(100vh - 9.5rem);">
-          <!-- Map -->
-          <div ref="mapEl" class="flex-1 z-0 min-h-[400px] lg:min-h-0" />
+        <div class="flex flex-col lg:flex-row flex-1 overflow-hidden" style="height: calc(100vh - 8.5rem);">
+          <!-- Map container -->
+          <div class="relative flex-1 min-h-[300px] lg:min-h-0 z-0">
+            <div ref="mapEl" class="absolute inset-0" />
+            
+            <!-- Mobile Toggle List Button -->
+            <button 
+              @click="showMobileList = !showMobileList"
+              class="lg:hidden absolute bottom-4 left-1/2 -translate-x-1/2 z-[1000] btn-primary shadow-2xl flex items-center gap-2"
+            >
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+              {{ showMobileList ? 'Hide List' : 'Show Spots' }}
+            </button>
+          </div>
 
           <!-- Spots panel -->
-          <div class="w-full lg:w-80 shrink-0 flex flex-col border-t lg:border-t-0 lg:border-l border-gray-100 bg-white overflow-y-auto max-h-[50vh] lg:max-h-none">
-            <div class="p-4 border-b border-gray-100">
-              <h2 class="font-semibold text-sm text-gray-600">Nearby Spots ({{ appStore.spots.length }})</h2>
+          <div 
+            class="w-full lg:w-85 shrink-0 flex flex-col border-t lg:border-t-0 lg:border-l border-gray-100 bg-white transition-all duration-300 ease-in-out"
+            :class="[
+              showMobileList ? 'h-[60vh] opacity-100' : 'h-0 lg:h-full opacity-0 lg:opacity-100 pointer-events-none lg:pointer-events-auto'
+            ]"
+          >
+            <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+              <h2 class="font-bold text-gray-900">Nearby Spots</h2>
+              <span class="badge badge-primary">{{ appStore.spots.length }}</span>
             </div>
 
-            <div v-if="appStore.spotsLoading" class="p-4 flex flex-col gap-3">
-              <div v-for="i in 4" :key="i" class="animate-pulse flex gap-3">
-                <div class="w-12 h-12 bg-gray-100 rounded-xl shrink-0" />
-                <div class="flex-1"><div class="h-3 bg-gray-100 rounded-full mb-2" /><div class="h-2 bg-gray-100 rounded-full w-2/3" /></div>
-              </div>
-            </div>
-
-            <div v-else class="flex flex-col">
-              <div
-                v-for="spot in appStore.spots" :key="spot.id"
-                @click="flyTo(spot)"
-                class="flex items-start gap-3 p-4 hover:bg-gray-50 cursor-pointer border-b border-gray-50 transition-colors"
-              >
-                <div class="w-12 h-12 rounded-xl bg-orange-50 flex items-center justify-center text-2xl shrink-0">
-                  {{ spotEmoji(spot.type) }}
-                </div>
-                <div class="flex-1 min-w-0">
-                  <p class="font-semibold text-sm truncate">{{ spot.name }}</p>
-                  <p class="text-xs text-gray-500 truncate">{{ spot.address || spot.type }}</p>
-                  <div class="flex items-center gap-1 mt-1">
-                    <span class="w-2 h-2 rounded-full" :class="spot.active ? 'bg-green-400' : 'bg-gray-300'" />
-                    <span class="text-xs text-gray-400">{{ spot.active ? 'Active now' : 'Inactive' }}</span>
+            <div class="flex-1 overflow-y-auto">
+              <div v-if="appStore.spotsLoading" class="p-4 flex flex-col gap-6">
+                <div v-for="i in 5" :key="i" class="flex gap-3">
+                  <SkeletonLoader width="48px" height="48px" class="!rounded-2xl shrink-0" />
+                  <div class="flex-1">
+                    <SkeletonLoader width="80%" height="0.875rem" class="mb-2.5" />
+                    <SkeletonLoader width="50%" height="0.625rem" />
                   </div>
                 </div>
               </div>
 
-              <div v-if="!appStore.spots.length" class="p-8 text-center text-gray-400">
-                <div class="text-3xl mb-2">📍</div>
-                <p class="text-sm">No spots found. Try clicking "Near Me".</p>
+              <div v-else class="flex flex-col">
+                <div
+                  v-for="spot in appStore.spots" :key="spot.id"
+                  @click="handleSpotClick(spot)"
+                  class="flex items-start gap-3 p-4 hover:bg-orange-50/50 cursor-pointer border-b border-gray-50 transition-colors group"
+                >
+                  <div class="w-12 h-12 rounded-2xl bg-orange-50 flex items-center justify-center text-2xl shrink-0 group-hover:scale-110 transition-transform">
+                    {{ spotEmoji(spot.type) }}
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="font-bold text-sm text-gray-900 truncate">{{ spot.name }}</p>
+                    <p class="text-xs text-gray-500 truncate mt-0.5">{{ spot.address || spot.type }}</p>
+                    <div class="flex items-center gap-2 mt-2">
+                      <span class="flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-green-500" />
+                        <span class="text-[10px] font-bold text-green-600 uppercase tracking-wider">Active</span>
+                      </span>
+                      <span class="text-[10px] text-gray-400 font-medium px-1.5 py-0.5 bg-gray-100 rounded">2.4 km</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div v-if="!appStore.spots.length" class="p-12 text-center">
+                  <div class="text-5xl mb-4 opacity-20">📍</div>
+                  <h3 class="font-bold text-gray-900 mb-1">No spots nearby</h3>
+                  <p class="text-sm text-gray-500">Try zooming out or moving the map to find active spots.</p>
+                </div>
               </div>
             </div>
           </div>
@@ -79,13 +107,20 @@ import { ref, onMounted, onUnmounted, watch } from 'vue'
 import Navbar from '@/components/Navbar.vue'
 import AppSidebar from '@/components/AppSidebar.vue'
 import SuggestSpotModal from '@/modals/SuggestSpotModal.vue'
+import SkeletonLoader from '@/components/SkeletonLoader.vue'
 import { useAppStore } from '@/stores/app'
 
 const appStore = useAppStore()
 const mapEl    = ref(null)
 const showSuggest = ref(false)
+const showMobileList = ref(false)
 const newSpotCoords = ref(null)
 let leafletMap = null
+
+function handleSpotClick(spot) {
+  flyTo(spot)
+  showMobileList.value = false
+}
 
 const spotEmoji = (type) => ({
   gym: '🏋️', court: '🏀', stadium: '🏟', pool: '🏊',
@@ -163,9 +198,13 @@ async function locateMe() {
     },
     (err) => {
       console.error('Geolocation error:', err)
-      alert("Could not get your location. Please ensure location services are enabled.")
+      let msg = "Could not get your location."
+      if (err.code === 1) msg = "Location access was denied. Please check your browser settings."
+      if (err.code === 2) msg = "Location unavailable. Your device might not have a GPS signal."
+      if (err.code === 3) msg = "Location request timed out. Please try again."
+      alert(msg)
     },
-    { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 }
+    { enableHighAccuracy: false, timeout: 20000, maximumAge: Infinity }
   )
 }
 
