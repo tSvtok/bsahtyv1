@@ -16,9 +16,31 @@ class MapService
      */
     public function getNearbySpots(float $lat, float $lng, int $radiusInMeters = 5000)
     {
-        // For now, return all approved spots since we're using JSON coordinates
-        // In production, you'd want proper geospatial queries
-        return Spot::where('status', 'APPROVED')->get();
+        // For now, filter in PHP since coordinates are JSON
+        // In production, proper PostGIS queries on a geometry column are better.
+        $spots = Spot::where('status', 'APPROVED')->get();
+
+        return $spots->filter(function ($spot) use ($lat, $lng, $radiusInMeters) {
+            $coords = $spot->coordinates;
+            if (!$coords || !isset($coords['lat']) || !isset($coords['lng'])) {
+                return false;
+            }
+
+            $distance = $this->haversineDistance($lat, $lng, $coords['lat'], $coords['lng']);
+            return $distance <= $radiusInMeters;
+        })->values();
+    }
+
+    private function haversineDistance($lat1, $lon1, $lat2, $lon2)
+    {
+        $earthRadius = 6371000; // meters
+        $dLat = deg2rad($lat2 - $lat1);
+        $dLon = deg2rad($lon2 - $lon1);
+        $a = sin($dLat / 2) * sin($dLat / 2) +
+             cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
+             sin($dLon / 2) * sin($dLon / 2);
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+        return $earthRadius * $c;
     }
 
     /**
