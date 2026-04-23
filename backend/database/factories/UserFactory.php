@@ -24,12 +24,19 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $sportsList = ['Football', 'Basketball', 'Tennis', 'Running', 'Swimming', 'Cycling', 'Gym', 'Yoga'];
         return [
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'bio' => fake()->sentence(10),
+            'location' => fake()->city(),
+            'sports' => fake()->randomElements($sportsList, fake()->numberBetween(1, 4)),
+            'city' => fake()->city(),
+            'role' => \App\Enums\Role::USER,
+            'user_level' => \App\Enums\UserLevel::BEGINNER,
         ];
     }
 

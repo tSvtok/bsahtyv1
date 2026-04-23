@@ -23,11 +23,46 @@ class Question extends Model
         'event_id',
     ];
 
+    protected $appends = ['reactions_count', 'dislikes_count', 'liked_by_me', 'disliked_by_me', 'comments_count'];
+
     protected function casts(): array
     {
         return [
             'sport_category' => SportCategory::class,
         ];
+    }
+
+    public function getReactionsCountAttribute(): int
+    {
+        return $this->reactions()->where('type', 'LIKE')->count();
+    }
+
+    public function getDislikesCountAttribute(): int
+    {
+        return $this->reactions()->where('type', 'DISLIKE')->count();
+    }
+
+    public function getCommentsCountAttribute(): int
+    {
+        return $this->comments()->count();
+    }
+
+    public function getLikedByMeAttribute(): bool
+    {
+        if (!auth('sanctum')->check()) return false;
+        return $this->reactions()
+            ->where('user_id', auth('sanctum')->id())
+            ->where('type', 'LIKE')
+            ->exists();
+    }
+
+    public function getDislikedByMeAttribute(): bool
+    {
+        if (!auth('sanctum')->check()) return false;
+        return $this->reactions()
+            ->where('user_id', auth('sanctum')->id())
+            ->where('type', 'DISLIKE')
+            ->exists();
     }
 
     public function user(): BelongsTo

@@ -30,6 +30,10 @@ class User extends Authenticatable
         'email',
         'password',
         'city',
+        'bio',
+        'location',
+        'avatar',
+        'sports',
         'is_banned',
         'user_level',
         'role',
@@ -58,6 +62,7 @@ class User extends Authenticatable
             'is_banned' => 'boolean',
             'user_level' => UserLevel::class,
             'role' => Role::class,
+            'sports' => 'array',
         ];
     }
 
@@ -94,5 +99,10 @@ class User extends Authenticatable
     public function messages(): HasMany
     {
         return $this->hasMany(Message::class);
+    }
+
+    public function participatingEvents(): BelongsToMany
+    {
+        return $this->belongsToMany(Event::class);
     }
 }

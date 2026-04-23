@@ -17,11 +17,25 @@ class Spot extends Model
         'status',
     ];
 
+    protected $appends = ['lat', 'lng'];
+
     protected function casts(): array
     {
         return [
             'status' => LocationStatus::class,
+            'coordinates' => 'array', // Store as JSON array
         ];
+    }
+
+    // Accessors for latitude and longitude
+    public function getLatAttribute()
+    {
+        return $this->coordinates['lat'] ?? null;
+    }
+
+    public function getLngAttribute()
+    {
+        return $this->coordinates['lng'] ?? null;
     }
 
     public function questions(): HasMany
