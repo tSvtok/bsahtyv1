@@ -52,6 +52,9 @@ class EventController extends Controller
             } else {
                 $event->participants()->detach($user->id);
             }
+            
+            event(new \App\Events\EventParticipantsUpdated($event));
+
             return response()->json(['data' => $event->load('participants')]);
         }
 

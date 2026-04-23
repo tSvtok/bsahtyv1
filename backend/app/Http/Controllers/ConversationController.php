@@ -36,7 +36,13 @@ class ConversationController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        $conversation->load('messages.sender', 'users');
-        return response()->json(['data' => $conversation]);
+        $conversation->load(['messages', 'users']);
+        
+        $otherUser = $conversation->users->where('id', '!=', $request->user()->id)->first();
+        
+        $data = $conversation->toArray();
+        $data['other_user'] = $otherUser;
+
+        return response()->json(['data' => $data]);
     }
 }
