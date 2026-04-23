@@ -15,6 +15,10 @@ class Spot extends Model
         'name',
         'coordinates',
         'status',
+        'type',
+        'address',
+        'city',
+        'image',
     ];
 
     protected $appends = ['lat', 'lng'];

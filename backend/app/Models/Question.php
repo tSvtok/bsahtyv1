@@ -23,7 +23,14 @@ class Question extends Model
         'event_id',
     ];
 
-    protected $appends = ['reactions_count', 'dislikes_count', 'liked_by_me', 'disliked_by_me', 'comments_count'];
+    protected $appends = ['reactions_count', 'dislikes_count', 'liked_by_me', 'disliked_by_me', 'comments_count', 'image_url'];
+
+    public function getImageUrlAttribute(): ?string
+    {
+        if (!$this->image) return null;
+        if (str_starts_with($this->image, 'http')) return $this->image;
+        return asset('storage/' . $this->image);
+    }
 
     protected function casts(): array
     {
