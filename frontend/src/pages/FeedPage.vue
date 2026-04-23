@@ -29,26 +29,26 @@
 
         <!-- Posts -->
         <div v-if="appStore.feedLoading" class="flex flex-col gap-4">
-          <div v-for="i in 3" :key="i" class="card p-5 animate-pulse">
+          <div v-for="i in 3" :key="i" class="card p-5">
             <div class="flex items-center gap-3 mb-5">
-              <div class="w-10 h-10 rounded-full bg-gray-100" />
+              <SkeletonLoader width="40px" height="40px" class="!rounded-full" />
               <div class="flex-1">
-                <div class="h-3.5 bg-gray-100 rounded-full w-32 mb-2" />
-                <div class="h-2.5 bg-gray-50 rounded-full w-20" />
+                <SkeletonLoader width="120px" height="0.875rem" class="mb-2" />
+                <SkeletonLoader width="80px" height="0.625rem" />
               </div>
-              <div class="w-8 h-4 bg-gray-50 rounded-full" />
+              <SkeletonLoader width="32px" height="1rem" />
             </div>
             <div class="space-y-3 mb-6">
-              <div class="h-3 bg-gray-100 rounded-full w-full" />
-              <div class="h-3 bg-gray-100 rounded-full w-5/6" />
-              <div class="h-3 bg-gray-100 rounded-full w-2/3" />
+              <SkeletonLoader width="100%" height="0.75rem" />
+              <SkeletonLoader width="90%" height="0.75rem" />
+              <SkeletonLoader width="60%" height="0.75rem" />
             </div>
             <div class="flex items-center justify-between pt-4 border-t border-gray-50">
               <div class="flex gap-4">
-                <div class="h-4 bg-gray-50 rounded-full w-12" />
-                <div class="h-4 bg-gray-50 rounded-full w-12" />
+                <SkeletonLoader width="48px" height="1rem" />
+                <SkeletonLoader width="48px" height="1rem" />
               </div>
-              <div class="h-4 bg-gray-50 rounded-full w-16" />
+              <SkeletonLoader width="64px" height="1rem" />
             </div>
           </div>
         </div>
@@ -81,6 +81,7 @@ import AppSidebar from '@/components/AppSidebar.vue'
 import PostCard from '@/components/PostCard.vue'
 import TrendingWidget from '@/components/TrendingWidget.vue'
 import CreatePostModal from '@/modals/CreatePostModal.vue'
+import SkeletonLoader from '@/components/SkeletonLoader.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useAppStore } from '@/stores/app'
 
