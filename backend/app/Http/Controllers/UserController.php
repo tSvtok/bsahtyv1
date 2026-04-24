@@ -11,10 +11,12 @@ class UserController extends Controller
     {
         $query = User::query();
 
-        if ($request->has('search')) {
+        if ($request->filled('search')) {
             $search = $request->search;
-            $query->where('name', 'like', "%{$search}%")
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
                   ->orWhere('sports', 'like', "%{$search}%");
+            });
         }
 
         $users = $query->where('id', '!=', auth()->id())->paginate(20);
