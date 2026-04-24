@@ -24,6 +24,8 @@ use Illuminate\Support\Facades\Route;
 // Public Routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 
 // Authenticated Routes
 Route::middleware('auth:sanctum')->group(function () {
@@ -66,6 +68,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/spots/{spot}/approve', [AdminController::class, 'approveSpot']);
         Route::patch('/spots/{spot}/reject', [AdminController::class, 'rejectSpot']);
     });
+
+    // Notifications
+    Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index']);
+    Route::patch('/notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead']);
+    Route::post('/notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead']);
+    Route::delete('/notifications/{id}', [\App\Http\Controllers\NotificationController::class, 'destroy']);
 
     // File Uploads
     Route::post('/upload', [FileController::class, 'upload']);
