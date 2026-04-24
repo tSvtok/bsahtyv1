@@ -23,7 +23,14 @@ class Event extends Model
         'spot_id',
     ];
 
-    protected $appends = ['participants_count', 'is_joined'];
+    protected $appends = ['participants_count', 'is_joined', 'image_url'];
+
+    public function getImageUrlAttribute(): ?string
+    {
+        if (!$this->image) return null;
+        if (str_starts_with($this->image, 'http')) return $this->image;
+        return asset('storage/' . $this->image);
+    }
 
     protected function casts(): array
     {
