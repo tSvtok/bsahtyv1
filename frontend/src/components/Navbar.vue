@@ -182,14 +182,14 @@ function setupEcho() {
       addNotification({
         title: 'Friend Request',
         body: 'Someone sent you a friend request!',
-        icon: '👤'
+        icon: ''
       })
     })
     .listen('.message.new', (e) => {
       addNotification({
         title: 'New Message',
         body: `You received a new message in a conversation.`,
-        icon: '💬'
+        icon: ''
       })
     })
 
@@ -199,7 +199,7 @@ function setupEcho() {
       addNotification({
         title: 'New Event',
         body: `${e.event.organizer?.name || 'Someone'} organized a new ${e.event.sport} match!`,
-        icon: '⚽'
+        icon: ''
       })
     })
 }
@@ -219,7 +219,7 @@ async function fetchNotifications() {
       id: n.id,
       title: n.data.title || 'Notification',
       body: n.data.body || n.data.message || '',
-      icon: n.data.icon || '🔔',
+      icon: n.data.icon || '',
       time: new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       read: !!n.read_at
     }))

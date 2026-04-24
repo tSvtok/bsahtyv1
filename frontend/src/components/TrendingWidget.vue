@@ -1,7 +1,7 @@
 <template>
   <div class="card-flat p-5 flex flex-col gap-4">
     <div class="flex items-center justify-between">
-      <h3 class="font-bold text-base">🔥 Trending Near You</h3>
+      <h3 class="font-bold text-base"> Trending Near You</h3>
       <span class="text-xs text-gray-400">This week</span>
     </div>
 
@@ -39,10 +39,10 @@
 <script setup>
 // Mock trending data — replace with API call in production
 const trending = [
-  { name: 'Football',    emoji: '⚽', events: 24, popularity: 92 },
-  { name: 'Basketball',  emoji: '🏀', events: 18, popularity: 74 },
-  { name: 'Tennis',      emoji: '🎾', events: 15, popularity: 60 },
-  { name: 'Volleyball',  emoji: '🏐', events: 11, popularity: 45 },
-  { name: 'Running',     emoji: '🏃', events: 8,  popularity: 32 },
+  { name: 'Football',    emoji: '', events: 24, popularity: 92 },
+  { name: 'Basketball',  emoji: '', events: 18, popularity: 74 },
+  { name: 'Tennis',      emoji: '', events: 15, popularity: 60 },
+  { name: 'Volleyball',  emoji: '', events: 11, popularity: 45 },
+  { name: 'Running',     emoji: '', events: 8,  popularity: 32 },
 ]
 </script>

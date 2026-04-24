@@ -57,7 +57,7 @@
         :class="{ '!opacity-50 !cursor-not-allowed': isFull }"
         :disabled="isFull"
       >
-        {{ joined ? 'Joined ✓' : (isFull ? 'Full' : 'Join') }}
+        {{ joined ? 'Joined ' : (isFull ? 'Full' : 'Join') }}
       </button>
     </div>
   </article>
@@ -75,8 +75,8 @@ const joined = ref(props.event.is_joined || false)
 const realTimeParticipantCount = ref(props.event.participants_count || 0)
 
 const sportEmojiMap = {
-  football: '⚽', basketball: '🏀', tennis: '🎾', volleyball: '🏐',
-  swimming: '🏊', running: '🏃', cycling: '🚴', padel: '🎾', default: '🏅'
+  football: '', basketball: '', tennis: '', volleyball: '',
+  swimming: '', running: '', cycling: '', padel: '', default: ''
 }
 
 const sportEmoji = computed(() => sportEmojiMap[props.event.sport?.toLowerCase()] || sportEmojiMap.default)
