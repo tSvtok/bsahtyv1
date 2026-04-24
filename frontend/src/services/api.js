@@ -17,8 +17,12 @@ api.interceptors.response.use(
   (res) => res,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('bssahty_token')
-      window.location.href = '/login'
+      const isAuthPage = window.location.pathname === '/login' || window.location.pathname === '/register'
+      if (!isAuthPage) {
+        localStorage.removeItem('bssahty_token')
+        const currentPath = window.location.pathname + window.location.search
+        window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`
+      }
     }
     return Promise.reject(error)
   }
