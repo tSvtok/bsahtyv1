@@ -155,7 +155,7 @@ const friendshipStatus = computed(() => {
 })
 
 const avatar = computed(() =>
-  user.value?.avatar ||
+  user.value?.avatar_url ||
   `https://ui-avatars.com/api/?name=${encodeURIComponent(user.value?.name || 'A')}&background=f97316&color=fff&size=160`
 )
 
