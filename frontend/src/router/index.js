@@ -8,13 +8,15 @@ const routes = [
   { path: '/feed',      name: 'feed',     component: () => import('@/pages/FeedPage.vue'),     meta: { auth: true } },
   { path: '/map',       name: 'map',      component: () => import('@/pages/MapPage.vue'),      meta: { auth: true } },
   { path: '/events',    name: 'events',   component: () => import('@/pages/EventsPage.vue'),   meta: { auth: true } },
+  { path: '/events/:id', name: 'event-detail', component: () => import('@/pages/EventDetailPage.vue'), meta: { auth: true } },
   { path: '/profile',   name: 'profile',  component: () => import('@/pages/ProfilePage.vue'),  meta: { auth: true } },
   { path: '/explore',   name: 'explore',  component: () => import('@/pages/ExplorePage.vue'),  meta: { auth: true } },
+  { path: '/friends',   name: 'friends',  component: () => import('@/pages/FriendsPage.vue'),  meta: { auth: true } },
   { path: '/profile/:id', name: 'user-profile', component: () => import('@/pages/ProfilePage.vue'), meta: { auth: true } },
   { path: '/messages',  name: 'messages', component: () => import('@/pages/MessagesPage.vue'), meta: { auth: true } },
   { path: '/messages/:id', name: 'chat', component: () => import('@/pages/ChatPage.vue'),      meta: { auth: true } },
   { path: '/admin',        name: 'admin', component: () => import('@/pages/AdminPage.vue'),     meta: { auth: true, admin: true } },
-  { path: '/:pathMatch(.*)*', redirect: '/' },
+  { path: '/:pathMatch(.*)*', name: 'not-found', component: () => import('@/pages/NotFoundPage.vue') },
 ]
 
 const router = createRouter({
