@@ -110,7 +110,7 @@
                 <div v-else class="space-y-4">
                    <div v-for="q in event.questions" :key="q.id" class="p-4 bg-gray-50 rounded-2xl">
                      <div class="flex gap-3 mb-2">
-                       <img :src="q.user?.avatar || `https://ui-avatars.com/api/?name=${q.user?.name}&background=random`" class="w-8 h-8 rounded-full" />
+                       <img :src="q.user?.avatar_url || `https://ui-avatars.com/api/?name=${q.user?.name}&background=random`" class="w-8 h-8 rounded-full" />
                        <div>
                          <p class="text-xs font-bold text-gray-700">{{ q.user?.name }}</p>
                          <p class="text-[10px] text-gray-400">{{ new Date(q.created_at).toLocaleDateString() }}</p>
@@ -159,7 +159,7 @@
                 
                 <div class="space-y-3">
                   <div v-for="p in event.participants" :key="p.id" class="flex items-center gap-3">
-                    <img :src="p.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(p.name)}&background=random`" class="w-8 h-8 rounded-full object-cover" />
+                    <img :src="p.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(p.name)}&background=random`" class="w-8 h-8 rounded-full object-cover" />
                     <span class="text-sm font-medium text-gray-700">{{ p.name }}</span>
                     <span v-if="p.id === event.organizer_id" class="ml-auto text-[10px] font-black text-orange-500 uppercase">Host</span>
                   </div>
@@ -202,7 +202,7 @@ const isFull    = computed(() => spotsLeft.value <= 0)
 const joined    = computed(() => event.value?.participants?.some(p => p.id === auth.user?.id))
 
 const organizerAvatar = computed(() => 
-  event.value?.organizer?.avatar || 
+  event.value?.organizer?.avatar_url || 
   `https://ui-avatars.com/api/?name=${encodeURIComponent(event.value?.organizer?.name || 'O')}&background=f97316&color=fff&size=80`
 )
 
