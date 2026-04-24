@@ -28,7 +28,7 @@
       <!-- Bio -->
       <div>
         <label class="label">Bio</label>
-        <textarea v-model="form.bio" rows="3" placeholder="Tell others about yourself…" class="input-field resize-none" />
+        <textarea v-model="form.bio" rows="3" placeholder="Tell others about yourself" class="input-field resize-none" />
       </div>
 
       <!-- City -->
@@ -56,7 +56,7 @@
       <div class="flex gap-3 pt-1">
         <button type="button" @click="$emit('update:modelValue', false)" class="btn-secondary flex-1">Cancel</button>
         <button type="submit" class="btn-primary flex-1" :disabled="loading">
-          {{ loading ? 'Saving…' : 'Save Changes' }}
+          {{ loading ? 'Saving' : 'Save Changes' }}
         </button>
       </div>
     </form>

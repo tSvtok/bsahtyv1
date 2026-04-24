@@ -1,5 +1,5 @@
 <template>
-  <BaseModal :modelValue="modelValue" title="Organize a Match 🏅" size="lg" @update:modelValue="$emit('update:modelValue', $event)">
+  <BaseModal :modelValue="modelValue" title="Organize a Match " size="lg" @update:modelValue="$emit('update:modelValue', $event)">
     <form @submit.prevent="submit" class="flex flex-col gap-5">
       <!-- Title -->
       <div>
@@ -42,7 +42,7 @@
       <!-- Location -->
       <div>
         <label class="label">Location <span class="text-red-400">*</span></label>
-        <input v-model="form.location" type="text" placeholder="Stadium, park, court name…" class="input-field" :class="{ error: errors.location }" />
+        <input v-model="form.location" type="text" placeholder="Stadium, park, court name" class="input-field" :class="{ error: errors.location }" />
         <p v-if="errors.location" class="text-red-500 text-xs mt-1">{{ errors.location }}</p>
       </div>
 
@@ -67,7 +67,7 @@
       <!-- Description -->
       <div>
         <label class="label">Description <span class="text-gray-400 font-normal">(optional)</span></label>
-        <textarea v-model="form.description" rows="3" placeholder="Tell players what to expect, what to bring…" class="input-field resize-none" />
+        <textarea v-model="form.description" rows="3" placeholder="Tell players what to expect, what to bring" class="input-field resize-none" />
       </div>
 
       <!-- Image Upload -->
@@ -104,7 +104,7 @@
         <button type="button" @click="$emit('update:modelValue', false)" class="btn-secondary flex-1">Cancel</button>
         <button type="submit" class="btn-primary flex-1" :disabled="loading">
           <svg v-if="loading" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-          {{ loading ? 'Creating…' : 'Create Match' }}
+          {{ loading ? 'Creating' : 'Create Match' }}
         </button>
       </div>
     </form>
@@ -132,14 +132,14 @@ const form = ref({
 })
 
 const sports = [
-  { name: 'Football',   emoji: '⚽' },
-  { name: 'Basketball', emoji: '🏀' },
-  { name: 'Tennis',     emoji: '🎾' },
-  { name: 'Volleyball', emoji: '🏐' },
-  { name: 'Running',    emoji: '🏃' },
-  { name: 'Cycling',    emoji: '🚴' },
-  { name: 'Padel',      emoji: '🎾' },
-  { name: 'Swimming',   emoji: '🏊' },
+  { name: 'Football',   emoji: '' },
+  { name: 'Basketball', emoji: '' },
+  { name: 'Tennis',     emoji: '' },
+  { name: 'Volleyball', emoji: '' },
+  { name: 'Running',    emoji: '' },
+  { name: 'Cycling',    emoji: '' },
+  { name: 'Padel',      emoji: '' },
+  { name: 'Swimming',   emoji: '' },
 ]
 
 function validate() {

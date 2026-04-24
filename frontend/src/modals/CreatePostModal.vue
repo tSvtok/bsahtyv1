@@ -14,7 +14,7 @@
       <textarea
         v-model="form.body"
         rows="4"
-        placeholder="What's happening in your sports world? 🏅"
+        placeholder="What's happening in your sports world? "
         class="input-field resize-none"
         :class="{ error: errors.body }"
       />
@@ -67,7 +67,7 @@
         <button type="button" @click="$emit('update:modelValue', false)" class="btn-secondary flex-1">Cancel</button>
         <button type="submit" class="btn-primary flex-1" :disabled="loading">
           <svg v-if="loading" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-          {{ loading ? 'Posting…' : 'Post' }}
+          {{ loading ? 'Posting' : 'Post' }}
         </button>
       </div>
     </form>

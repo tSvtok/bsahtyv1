@@ -26,7 +26,7 @@
       <div class="flex gap-3 mt-2">
         <button type="button" @click="$emit('update:modelValue', false)" class="btn-secondary flex-1">Cancel</button>
         <button type="submit" class="btn-primary flex-1" :disabled="loading">
-          {{ loading ? 'Submitting...' : 'Suggest Spot 📍' }}
+          {{ loading ? 'Submitting...' : 'Suggest Spot ' }}
         </button>
       </div>
     </form>
