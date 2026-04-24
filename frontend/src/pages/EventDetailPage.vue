@@ -27,12 +27,9 @@
           <!-- Hero section -->
           <div class="relative h-48 sm:h-64 rounded-[2.5rem] overflow-hidden group shadow-2xl">
             <!-- Background Image or Gradient -->
-            <div v-if="event.image_url" class="absolute inset-0">
-              <img :src="event.image_url" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Match Cover" />
+            <div class="absolute inset-0">
+              <img :src="displayImage" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Match Cover" />
               <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-            </div>
-            <div v-else class="absolute inset-0 bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center">
-              <span class="text-7xl sm:text-9xl transform group-hover:scale-110 transition-transform duration-500">{{ sportEmoji }}</span>
             </div>
             
             <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
@@ -195,12 +192,20 @@ const joining = ref(false)
 const error   = ref(null)
 const event   = ref(null)
 
-const sportEmojiMap = {
-  football: '', basketball: '', tennis: '', volleyball: '',
-  swimming: '', running: '', cycling: '', padel: '', default: ''
+const sportImageMap = {
+  football: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800',
+  basketball: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=800',
+  tennis: 'https://images.unsplash.com/photo-1595435066311-66774a3f1234?w=800',
+  volleyball: 'https://images.unsplash.com/photo-1592656094267-764a45160876?w=800',
+  running: 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=800',
+  cycling: 'https://images.unsplash.com/photo-1483721310020-03333e577078?w=800',
+  padel: 'https://images.unsplash.com/photo-1626245917164-326e033e6f98?w=800',
+  default: 'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=800'
 }
 
-const sportEmoji = computed(() => sportEmojiMap[event.value?.sport?.toLowerCase()] || sportEmojiMap.default)
+const displayImage = computed(() => {
+  return event.value?.image_url || sportImageMap[event.value?.sport?.toLowerCase()] || sportImageMap.default
+})
 const participantCount = computed(() => event.value?.participants?.length || 0)
 const maxParticipants  = computed(() => event.value?.max_participants || 10)
 const spotsLeft = computed(() => Math.max(0, maxParticipants.value - participantCount.value))

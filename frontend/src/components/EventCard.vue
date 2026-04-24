@@ -5,10 +5,8 @@
   >
     <!-- Cover Image -->
     <div class="h-32 sm:h-40 relative overflow-hidden bg-gray-100">
-      <img v-if="event.image_url" :src="event.image_url" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
-      <div v-else class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 text-3xl opacity-50 group-hover:scale-125 transition-transform duration-500">
-        {{ sportEmoji }}
-      </div>
+      <img v-if="displayImage" :src="displayImage" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+      <div v-else class="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200" />
       <div class="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors" />
     </div>
 
@@ -90,11 +88,20 @@ const spotsLeft   = computed(() => maxParticipants.value - participantCount.valu
 const isFull      = computed(() => spotsLeft.value <= 0)
 const progressPct = computed(() => Math.min(100, (participantCount.value / maxParticipants.value) * 100))
 
-const sportEmojiMap = {
-  football: '', basketball: '', tennis: '', volleyball: '',
-  swimming: '', running: '', cycling: '', padel: '', default: ''
+const sportImageMap = {
+  football: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800',
+  basketball: 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=800',
+  tennis: 'https://images.unsplash.com/photo-1595435066311-66774a3f1234?w=800',
+  volleyball: 'https://images.unsplash.com/photo-1592656094267-764a45160876?w=800',
+  running: 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=800',
+  cycling: 'https://images.unsplash.com/photo-1483721310020-03333e577078?w=800',
+  padel: 'https://images.unsplash.com/photo-1626245917164-326e033e6f98?w=800',
+  default: 'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=800'
 }
-const sportEmoji = computed(() => sportEmojiMap[props.event.sport?.toLowerCase()] || sportEmojiMap.default)
+
+const displayImage = computed(() => {
+  return props.event.image_url || sportImageMap[props.event.sport?.toLowerCase()] || sportImageMap.default
+})
 
 const progressColor = computed(() => {
   if (progressPct.value >= 90) return 'bg-red-400'
