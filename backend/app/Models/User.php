@@ -39,6 +39,15 @@ class User extends Authenticatable
         'role',
     ];
 
+    protected $appends = ['avatar_url'];
+
+    public function getAvatarUrlAttribute(): ?string
+    {
+        if (!$this->avatar) return null;
+        if (str_starts_with($this->avatar, 'http')) return $this->avatar;
+        return asset('storage/' . $this->avatar);
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *
