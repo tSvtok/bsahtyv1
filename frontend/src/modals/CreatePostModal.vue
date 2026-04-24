@@ -92,7 +92,7 @@ const form    = ref({ body: '', image_url: '', image_path: '', sport: '' })
 const errors  = ref({})
 
 const myAvatar = computed(() =>
-  auth.user?.avatar ||
+  auth.user?.avatar_url ||
   `https://ui-avatars.com/api/?name=${encodeURIComponent(auth.user?.name || 'A')}&background=f97316&color=fff`
 )
 
