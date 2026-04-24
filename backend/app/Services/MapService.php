@@ -44,11 +44,30 @@ class MapService
     }
 
     /**
-     * Example placeholder for future external Geocoding (Address to Lat/Lng).
+     * Geocode an address to Lat/Lng using Nominatim (OpenStreetMap).
      */
     public function geocodeAddress(string $address)
     {
-        // Integration with Google Maps API or OpenStreetMap Nominatim would go here.
+        try {
+            $response = \Illuminate\Support\Facades\Http::withHeaders([
+                'User-Agent' => 'B-SSAHTY App'
+            ])->get('https://nominatim.openstreetmap.org/search', [
+                'q' => $address,
+                'format' => 'json',
+                'limit' => 1
+            ]);
+
+            if ($response->successful() && count($response->json()) > 0) {
+                $data = $response->json()[0];
+                return [
+                    'lat' => (float) $data['lat'],
+                    'lng' => (float) $data['lon'],
+                ];
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Geocoding failed: " . $e->getMessage());
+        }
+
         return [
             'lat' => 0.0,
             'lng' => 0.0,
