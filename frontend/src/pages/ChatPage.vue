@@ -76,7 +76,7 @@
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import Navbar from '@/components/Navbar.vue'
-import { messagingApi } from '@/services/api'
+import api, { messagingApi } from '@/services/api'
 import { useAuthStore } from '@/stores/auth'
 import echo from '@/services/echo'
 
@@ -150,8 +150,17 @@ onMounted(async () => {
       if (e.message.user_id !== auth.user?.id) {
         messages.value.push(e.message)
         scrollToBottom()
+        // Mark as read immediately
+        api.patch(`/messages/${e.message.id}/read`)
       }
     })
+
+  // Mark all currently unread messages as read
+  messages.value.forEach(m => {
+    if (m.user_id !== auth.user?.id && !m.is_read) {
+      api.patch(`/messages/${m.id}/read`)
+    }
+  })
 })
 
 onUnmounted(() => {

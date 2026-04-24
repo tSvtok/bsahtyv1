@@ -67,6 +67,7 @@ export const spotsApi = {
 // ─── Messaging ─────────────────────────────────────────────────────────────
 export const messagingApi = {
   conversations:    ()        => api.get('/conversations'),
+  store:            (data)    => api.post('/conversations', data),
   conversation:     (id)      => api.get(`/conversations/${id}`),
   send:             (data)    => api.post('/messages', data),
   markRead:         (id)      => api.patch(`/messages/${id}/read`),

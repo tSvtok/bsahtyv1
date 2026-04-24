@@ -33,7 +33,7 @@
                 <button v-else-if="friendshipStatus === 'ACCEPTED'" @click="removeFriend" class="btn-secondary !py-1.5 !px-4 !text-sm mb-1 text-red-500">
                   Friends
                 </button>
-                <button class="btn-secondary !py-1.5 !px-4 !text-sm mb-1">Message</button>
+                <button @click="startConversation" class="btn-secondary !py-1.5 !px-4 !text-sm mb-1">Message</button>
               </div>
             </div>
 
@@ -132,9 +132,11 @@ import EventCard from '@/components/EventCard.vue'
 import EditProfileModal from '@/modals/EditProfileModal.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useAppStore } from '@/stores/app'
-import api from '@/services/api'
+import api, { messagingApi } from '@/services/api'
+import { useRouter } from 'vue-router'
 
 const route    = useRoute()
+const router   = useRouter()
 const auth     = useAuthStore()
 const appStore = useAppStore()
 
@@ -209,6 +211,16 @@ async function removeFriend() {
     friendship.value = null
   } catch (e) {}
 }
+
+async function startConversation() {
+  try {
+    const res = await messagingApi.store({ user_ids: [user.value.id] })
+    router.push(`/messages/${res.data.id}`)
+  } catch (e) {
+    console.error('Failed to start conversation', e)
+  }
+}
+
 
 onMounted(() => { 
   appStore.fetchFeed()
