@@ -79,7 +79,7 @@ const errors  = ref({})
 const form = ref({
   name:   auth.user?.name   || '',
   bio:    auth.user?.bio    || '',
-  avatar: auth.user?.avatar || '',
+  avatar: auth.user?.avatar_url || '',
   city:   auth.user?.city   || '',
   sports: auth.user?.sports || [],
 })
