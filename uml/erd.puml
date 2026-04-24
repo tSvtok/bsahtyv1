@@ -1,0 +1,166 @@
+@startuml B-SSAHTY Entity Relationship Diagram
+
+!define primary_key(x) <b><color:#b8861b><&key></color> x</b>
+!define foreign_key(x) <color:#aaaaaa><&key></color> x
+!define column(x) <color:#efefef><&caret></color> x
+!define table(x) entity x << (T, white) >>
+
+skinparam roundcorner 10
+skinparam linetype ortho
+skinparam shadowtore false
+skinparam class {
+    BackgroundColor White
+    BorderColor Orange
+    ArrowColor Gray
+}
+
+' ========================
+' TABLES
+' ========================
+
+table(users) {
+    primary_key(id): BIGINT
+    column(name): VARCHAR
+    column(email): VARCHAR
+    column(password): VARCHAR
+    column(role): VARCHAR
+    column(avatar_url): VARCHAR
+    column(city): VARCHAR
+    column(sports): JSON
+    column(is_banned): BOOLEAN
+    column(last_online_at): TIMESTAMP
+    column(created_at): TIMESTAMP
+    column(updated_at): TIMESTAMP
+}
+
+table(spots) {
+    primary_key(id): BIGINT
+    column(name): VARCHAR
+    column(description): TEXT
+    column(latitude): DECIMAL
+    column(longitude): DECIMAL
+    column(address): VARCHAR
+    column(image): VARCHAR
+    column(status): VARCHAR
+    foreign_key(created_by): BIGINT
+    column(created_at): TIMESTAMP
+    column(updated_at): TIMESTAMP
+}
+
+table(events) {
+    primary_key(id): BIGINT
+    column(title): VARCHAR
+    column(description): TEXT
+    column(date): DATE
+    column(time): TIME
+    column(latitude): DECIMAL
+    column(longitude): DECIMAL
+    column(max_participants): INT
+    column(image): VARCHAR
+    foreign_key(user_id): BIGINT
+    foreign_key(spot_id): BIGINT
+    column(created_at): TIMESTAMP
+    column(updated_at): TIMESTAMP
+}
+
+table(event_user) {
+    foreign_key(event_id): BIGINT
+    foreign_key(user_id): BIGINT
+}
+
+table(questions) {
+    primary_key(id): BIGINT
+    column(content): TEXT
+    column(category): VARCHAR
+    foreign_key(user_id): BIGINT
+    column(created_at): TIMESTAMP
+    column(updated_at): TIMESTAMP
+}
+
+table(comments) {
+    primary_key(id): BIGINT
+    column(content): TEXT
+    foreign_key(user_id): BIGINT
+    foreign_key(question_id): BIGINT
+    column(created_at): TIMESTAMP
+    column(updated_at): TIMESTAMP
+}
+
+table(reactions) {
+    primary_key(id): BIGINT
+    column(type): VARCHAR
+    foreign_key(user_id): BIGINT
+    column(reactable_id): BIGINT
+    column(reactable_type): VARCHAR
+    column(created_at): TIMESTAMP
+    column(updated_at): TIMESTAMP
+}
+
+table(friendships) {
+    primary_key(id): BIGINT
+    foreign_key(user_id): BIGINT
+    foreign_key(friend_id): BIGINT
+    column(status): VARCHAR
+    column(created_at): TIMESTAMP
+    column(updated_at): TIMESTAMP
+}
+
+table(conversations) {
+    primary_key(id): BIGINT
+    column(created_at): TIMESTAMP
+    column(updated_at): TIMESTAMP
+}
+
+table(conversation_user) {
+    foreign_key(conversation_id): BIGINT
+    foreign_key(user_id): BIGINT
+}
+
+table(messages) {
+    primary_key(id): BIGINT
+    column(content): TEXT
+    column(is_read): BOOLEAN
+    foreign_key(user_id): BIGINT
+    foreign_key(conversation_id): BIGINT
+    column(created_at): TIMESTAMP
+    column(updated_at): TIMESTAMP
+}
+
+table(notifications) {
+    primary_key(id): UUID
+    column(type): VARCHAR
+    column(notifiable_id): BIGINT
+    column(notifiable_type): VARCHAR
+    column(data): JSON
+    column(read_at): TIMESTAMP
+    column(created_at): TIMESTAMP
+    column(updated_at): TIMESTAMP
+}
+
+' ========================
+' RELATIONSHIPS
+' ========================
+
+users "1" -- "*" spots : "creates"
+users "1" -- "*" events : "organizes"
+users "1" -- "*" questions : "posts"
+users "1" -- "*" comments : "writes"
+users "1" -- "*" reactions : "gives"
+users "1" -- "*" friendships : "is part of"
+users "1" -- "*" messages : "sends"
+users "1" -- "*" conversation_user : "participates"
+users "1" -- "*" event_user : "joins"
+
+events "1" -- "*" event_user : "has participants"
+spots "1" -- "*" events : "hosts"
+
+questions "1" -- "*" comments : "has"
+conversations "1" -- "*" messages : "contains"
+conversations "1" -- "*" conversation_user : "has members"
+
+' Polymorphic (simplified for ERD)
+reactions "1" .. "*" questions
+reactions "1" .. "*" comments
+reactions "1" .. "*" events
+
+@enduml
