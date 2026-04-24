@@ -9,7 +9,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
             <h1 class="text-2xl font-black">Local Matches</h1>
-            <p class="text-gray-500 text-sm mt-0.5">Find and join games happening near you</p>
+            <p class="text-gray-500 text-sm mt-0.5">{{ nearbyOnly ? `Showing games in ${auth.user?.city || 'your area'}` : 'Find and join games happening near you' }}</p>
           </div>
           <button @click="showCreate = true" class="btn-primary shrink-0">
             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
@@ -18,13 +18,24 @@
         </div>
 
         <!-- Filters -->
-        <div class="flex flex-wrap gap-2 mb-6">
+        <div class="flex flex-wrap items-center gap-2 mb-6">
           <button
             v-for="s in ['All', ...sports]" :key="s"
             @click="toggleFilter(s)"
             class="px-4 py-1.5 rounded-full text-sm font-medium border transition-all"
             :class="filter === s ? 'bg-orange-500 text-white border-orange-500 shadow' : 'border-gray-200 text-gray-600 hover:border-orange-300 bg-white'"
           >{{ s }}</button>
+
+          <div class="h-6 w-px bg-gray-200 mx-1 hidden sm:block" />
+
+          <button
+            @click="toggleNearby"
+            class="px-4 py-1.5 rounded-full text-sm font-medium border transition-all flex items-center gap-1.5"
+            :class="nearbyOnly ? 'bg-blue-500 text-white border-blue-500 shadow' : 'border-gray-200 text-gray-600 hover:border-blue-300 bg-white'"
+          >
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            Near Me
+          </button>
         </div>
 
         <!-- Events grid -->
@@ -81,18 +92,30 @@ import EventCard from '@/components/EventCard.vue'
 import TrendingWidget from '@/components/TrendingWidget.vue'
 import CreateEventModal from '@/modals/CreateEventModal.vue'
 import { useAppStore } from '@/stores/app'
+import { useAuthStore } from '@/stores/auth'
 
 const appStore   = useAppStore()
+const auth       = useAuthStore()
 const showCreate = ref(false)
-const filter     = ref('All')
-const loadMoreTarget = ref(null)
-
-const sports = ['Football', 'Basketball', 'Tennis', 'Volleyball', 'Running', 'Cycling', 'Padel']
+const nearbyOnly = ref(false)
 
 function toggleFilter(s) {
   filter.value = s
-  const params = s === 'All' ? {} : { sport: s }
-  appStore.fetchEvents({ ...params, page: 1 })
+  fetchWithParams()
+}
+
+function toggleNearby() {
+  nearbyOnly.value = !nearbyOnly.value
+  fetchWithParams()
+}
+
+function fetchWithParams(append = false) {
+  const page = append ? appStore.eventsPagination.current_page + 1 : 1
+  const params = { page }
+  if (filter.value !== 'All') params.sport = filter.value
+  if (nearbyOnly.value) params.nearby = true
+  
+  appStore.fetchEvents(params, append)
 }
 
 let observer = null
@@ -104,8 +127,7 @@ onMounted(() => {
   observer = new IntersectionObserver((entries) => {
     if (entries[0].isIntersecting && !appStore.eventsLoading) {
       if (appStore.eventsPagination.current_page < appStore.eventsPagination.last_page) {
-        const params = filter.value === 'All' ? {} : { sport: filter.value }
-        appStore.fetchEvents({ ...params, page: appStore.eventsPagination.current_page + 1 }, true)
+        fetchWithParams(true)
       }
     }
   }, { threshold: 0.1 })
