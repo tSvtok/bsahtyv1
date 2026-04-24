@@ -57,6 +57,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Chat
     Route::apiResource('conversations', ConversationController::class)->only(['index', 'store', 'show']);
+    Route::get('/messages/unread-count', [MessageController::class, 'unreadCount']);
     Route::post('/messages', [MessageController::class, 'store']);
     Route::patch('/messages/{message}/read', [MessageController::class, 'markAsRead']);
 

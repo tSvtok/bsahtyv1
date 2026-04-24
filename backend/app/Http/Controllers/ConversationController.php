@@ -16,6 +16,10 @@ class ConversationController extends Controller
             ->map(function ($convo) use ($user) {
                 $otherUser = $convo->users->where('id', '!=', $user->id)->first();
                 $convo->other_user = $otherUser;
+                $convo->unread_count = $convo->messages()
+                    ->where('user_id', '!=', $user->id)
+                    ->where('is_read', false)
+                    ->count();
                 return $convo;
             });
 
