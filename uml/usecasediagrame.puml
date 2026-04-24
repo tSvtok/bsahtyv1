@@ -1,0 +1,65 @@
+@startuml B-SSAHTY Use Case Diagram
+
+skinparam actorStyle awesome
+skinparam packageStyle rectangle
+skinparam usecase {
+    BackgroundColor White
+    BorderColor Orange
+    ArrowColor Gray
+}
+
+actor "Guest" as guest
+actor "Athlete" as user
+actor "Admin" as admin
+
+user --|> guest
+admin --|> user
+
+package "B-SSAHTY Platform" {
+    package "Authentication" {
+        usecase "Register" as UC1
+        usecase "Login" as UC2
+        usecase "Manage Profile" as UC3
+    }
+
+    package "Social & Community" {
+        usecase "View Community Feed" as UC4
+        usecase "Create Post/Question" as UC5
+        usecase "Comment & React" as UC6
+        usecase "Manage Friendships" as UC7
+        usecase "Real-time Chat" as UC8
+    }
+
+    package "Events & Spots" {
+        usecase "View Interactive Map" as UC9
+        usecase "Discover Sports Spots" as UC10
+        usecase "Organize Match/Event" as UC11
+        usecase "Join/Leave Match" as UC12
+    }
+
+    package "Administration" {
+        usecase "View Platform Stats" as UC13
+        usecase "Approve/Reject Spots" as UC14
+        usecase "Moderate Users" as UC15
+    }
+}
+
+guest --> UC1
+guest --> UC2
+
+user --> UC3
+user --> UC4
+user --> UC5
+user --> UC6
+user --> UC7
+user --> UC8
+user --> UC9
+user --> UC10
+user --> UC11
+user --> UC12
+
+admin --> UC13
+admin --> UC14
+admin --> UC15
+
+@enduml
