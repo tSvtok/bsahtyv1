@@ -66,7 +66,7 @@
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-gray-50">
-                    <tr v-for="u in users" :key="u.id" class="hover:bg-gray-50/50 transition-colors">
+                    <tr v-for="u in displayedUsers" :key="u.id" class="hover:bg-gray-50/50 transition-colors">
                       <td class="px-4 py-3">
                         <p class="font-bold text-gray-800">{{ u.name }}</p>
                         <p class="text-[10px] text-gray-400">{{ u.email }}</p>
@@ -95,7 +95,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import Navbar from '@/components/Navbar.vue'
 import AppSidebar from '@/components/AppSidebar.vue'
 import api from '@/services/api'
@@ -105,6 +105,7 @@ import { useToastStore } from '@/stores/toast'
 const stats = ref({})
 const pendingSpots = ref([])
 const users = ref([])
+const displayedUsers = computed(() => users.value.slice(0, 10))
 const loading = ref(true)
 const toastStore = useToastStore()
 
