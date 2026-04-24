@@ -6,15 +6,30 @@ export const useAppStore = defineStore('app', () => {
   // Feed
   const posts   = ref([])
   const feedLoading = ref(false)
+  const feedPagination = ref({ current_page: 1, last_page: 1, total: 0 })
 
-  async function fetchFeed(params = {}) {
-    feedLoading.value = true
+  async function fetchFeed(params = {}, append = false) {
+    if (!append) feedLoading.value = true
     try {
-      const res = await feedApi.list(params)
-      // Standardize for paginated responses (data.data)
-      posts.value = res.data.data?.data || res.data.data || []
-    } catch { posts.value = [] }
-    finally  { feedLoading.value = false }
+      const res = await feedApi.list({ ...params, page: params.page || 1 })
+      const data = res.data.data
+      
+      if (append) {
+        posts.value = [...posts.value, ...(data.data || [])]
+      } else {
+        posts.value = data.data || []
+      }
+      
+      feedPagination.value = {
+        current_page: data.current_page,
+        last_page: data.last_page,
+        total: data.total
+      }
+    } catch { 
+      if (!append) posts.value = [] 
+    } finally  { 
+      feedLoading.value = false 
+    }
   }
 
   async function createPost(data) {
@@ -29,20 +44,35 @@ export const useAppStore = defineStore('app', () => {
   // Events
   const events = ref([])
   const eventsLoading = ref(false)
+  const eventsPagination = ref({ current_page: 1, last_page: 1, total: 0 })
 
-  async function fetchEvents(params = {}) {
-    eventsLoading.value = true
+  async function fetchEvents(params = {}, append = false) {
+    if (!append) eventsLoading.value = true
     try {
-      const res = await eventsApi.list(params)
-      // Standardize for paginated responses (data.data)
-      events.value = res.data.data?.data || res.data.data || []
-    } catch { events.value = [] }
-    finally  { eventsLoading.value = false }
+      const res = await eventsApi.list({ ...params, page: params.page || 1 })
+      const data = res.data.data
+      
+      if (append) {
+        events.value = [...events.value, ...(data.data || [])]
+      } else {
+        events.value = data.data || []
+      }
+
+      eventsPagination.value = {
+        current_page: data.current_page,
+        last_page: data.last_page,
+        total: data.total
+      }
+    } catch { 
+      if (!append) events.value = [] 
+    } finally  { 
+      eventsLoading.value = false 
+    }
   }
 
   async function createEvent(data) {
     const res = await eventsApi.create(data)
-    events.value.unshift(res.data)
+    events.value.unshift(res.data.data)
   }
 
   // Spots
@@ -53,7 +83,7 @@ export const useAppStore = defineStore('app', () => {
     spotsLoading.value = true
     try {
       const res = await spotsApi.list()
-      spots.value = res.data
+      spots.value = res.data.data
     } catch { spots.value = [] }
     finally  { spotsLoading.value = false }
   }
@@ -62,14 +92,14 @@ export const useAppStore = defineStore('app', () => {
     spotsLoading.value = true
     try {
       const res = await spotsApi.nearby(lat, lng)
-      spots.value = res.data
+      spots.value = res.data.data
     } catch { spots.value = [] }
     finally  { spotsLoading.value = false }
   }
 
   return {
-    posts, feedLoading, fetchFeed, createPost, reactToPost,
-    events, eventsLoading, fetchEvents, createEvent,
+    posts, feedLoading, feedPagination, fetchFeed, createPost, reactToPost,
+    events, eventsLoading, eventsPagination, fetchEvents, createEvent,
     spots, spotsLoading, fetchSpots, fetchNearby,
   }
 })
