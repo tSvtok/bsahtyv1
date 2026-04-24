@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="flex items-start justify-between gap-3">
       <router-link :to="`/profile/${post.user?.id}`" class="flex items-center gap-3 group">
-        <img :src="authorAvatar" :alt="post.user?.name" class="w-10 h-10 rounded-full object-cover group-hover:ring-2 group-hover:ring-orange-400 transition-all" />
+        <img :src="userAvatar" :alt="post.user?.name" class="w-10 h-10 rounded-full object-cover group-hover:ring-2 group-hover:ring-orange-400 transition-all" />
         <div>
           <p class="font-semibold text-sm group-hover:text-orange-500 transition-colors">{{ post.user?.name || 'Athlete' }}</p>
           <p class="text-xs text-gray-500">{{ formattedDate }}</p>
@@ -78,7 +78,7 @@
       <div v-if="showComments" class="flex flex-col gap-3 pt-2 border-t border-gray-100">
         <!-- Existing comments -->
         <div v-for="c in post.comments" :key="c.id" class="flex gap-2.5">
-          <img :src="c.user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.user?.name || 'A')}&background=f97316&color=fff&size=40`" class="w-7 h-7 rounded-full object-cover shrink-0 mt-0.5" />
+          <img :src="c.user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.user?.name || 'A')}&background=f97316&color=fff&size=40`" class="w-7 h-7 rounded-full object-cover shrink-0 mt-0.5" />
           <div class="bg-gray-50 rounded-xl px-3 py-2 flex-1">
             <p class="text-xs font-semibold text-gray-700">{{ c.user?.name }}</p>
             <p class="text-sm text-gray-600 mt-0.5">{{ c.content }}</p>
@@ -122,13 +122,13 @@ const dislikeCount = ref(props.post.dislikes_count || 0)
 const showComments = ref(false)
 const commentText = ref('')
 
-const authorAvatar = computed(() =>
-  props.post.user?.avatar ||
-  `https://ui-avatars.com/api/?name=${encodeURIComponent(props.post.user?.name || 'A')}&background=f97316&color=fff&size=80`
+const userAvatar = computed(() =>
+  props.post.user?.avatar_url ||
+  `https://ui-avatars.com/api/?name=${encodeURIComponent(props.post.user?.name || 'A')}&background=f97316&color=fff&size=60`
 )
 
 const myAvatar = computed(() =>
-  auth.user?.avatar ||
+  auth.user?.avatar_url ||
   `https://ui-avatars.com/api/?name=${encodeURIComponent(auth.user?.name || 'A')}&background=f97316&color=fff&size=40`
 )
 
