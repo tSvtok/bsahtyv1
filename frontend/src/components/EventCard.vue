@@ -92,8 +92,8 @@ const progressColor = computed(() => {
   return 'bg-green-400'
 })
 
-const organizerAvatar = computed(() =>
-  props.event.organizer?.avatar ||
+const organizerAvatar = computed(() => 
+  props.event.organizer?.avatar_url || 
   `https://ui-avatars.com/api/?name=${encodeURIComponent(props.event.organizer?.name || 'O')}&background=f97316&color=fff&size=40`
 )
 
