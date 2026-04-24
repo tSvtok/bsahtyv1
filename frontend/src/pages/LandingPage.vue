@@ -31,7 +31,7 @@
 
         <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <router-link to="/register" class="btn-primary text-base !py-3.5 !px-8">
-            Get Started — It's Free 🏅
+            Get Started — It's Free 
           </router-link>
           <router-link to="/events" class="btn-secondary text-base !py-3.5 !px-8 !text-white !border-white/20 hover:!border-orange-400">
             Browse Events →
@@ -68,7 +68,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 auto-rows-[240px]">
           <!-- Large card -->
           <div class="lg:col-span-2 bg-gradient-to-br from-orange-500 to-orange-700 rounded-3xl p-8 flex flex-col justify-end overflow-hidden relative">
-            <div class="absolute top-6 right-6 text-7xl opacity-30">📍</div>
+            <div class="absolute top-6 right-6 text-7xl opacity-30"></div>
             <span class="badge bg-white/20 text-white w-fit mb-3">Live Map</span>
             <h3 class="text-2xl font-bold text-white">Find Spots & Active Games Near You</h3>
             <p class="text-orange-100 mt-2 text-sm">Real-time map powered by PostGIS — discover courts, parks, and who's playing now.</p>
@@ -76,7 +76,7 @@
 
           <!-- Small card -->
           <div class="bg-gray-800/60 border border-gray-700/50 rounded-3xl p-6 flex flex-col justify-between">
-            <span class="text-4xl">🏟</span>
+            <span class="text-4xl"></span>
             <div>
               <h3 class="text-xl font-bold text-white">Organize Matches</h3>
               <p class="text-gray-400 text-sm mt-1">Set up events with date, time, location & skill level.</p>
@@ -85,7 +85,7 @@
 
           <!-- Small card -->
           <div class="bg-gray-800/60 border border-gray-700/50 rounded-3xl p-6 flex flex-col justify-between">
-            <span class="text-4xl">💬</span>
+            <span class="text-4xl"></span>
             <div>
               <h3 class="text-xl font-bold text-white">Community Feed</h3>
               <p class="text-gray-400 text-sm mt-1">Share moments, ask questions, and follow local athletes.</p>
@@ -94,7 +94,7 @@
 
           <!-- Large card -->
           <div class="lg:col-span-2 bg-gray-800/60 border border-gray-700/50 rounded-3xl p-8 flex flex-col justify-end overflow-hidden relative">
-            <div class="absolute top-6 right-6 text-7xl opacity-20">📨</div>
+            <div class="absolute top-6 right-6 text-7xl opacity-20"></div>
             <span class="badge bg-orange-500/20 text-orange-400 w-fit mb-3">Direct Messaging</span>
             <h3 class="text-2xl font-bold text-white">Chat with Teammates</h3>
             <p class="text-gray-400 mt-2 text-sm">Coordinate games, share tips, and build lasting sports connections.</p>
@@ -151,11 +151,11 @@ const stats = [
 ]
 
 const allSports = [
-  { name: 'Football',   emoji: '⚽' }, { name: 'Basketball', emoji: '🏀' },
-  { name: 'Tennis',     emoji: '🎾' }, { name: 'Volleyball', emoji: '🏐' },
-  { name: 'Running',    emoji: '🏃' }, { name: 'Cycling',    emoji: '🚴' },
-  { name: 'Swimming',   emoji: '🏊' }, { name: 'Padel',      emoji: '🎾' },
-  { name: 'Boxing',     emoji: '🥊' }, { name: 'CrossFit',   emoji: '🏋️' },
-  { name: 'Yoga',       emoji: '🧘' }, { name: 'Badminton',  emoji: '🏸' },
+  { name: 'Football',   emoji: '' }, { name: 'Basketball', emoji: '' },
+  { name: 'Tennis',     emoji: '' }, { name: 'Volleyball', emoji: '' },
+  { name: 'Running',    emoji: '' }, { name: 'Cycling',    emoji: '' },
+  { name: 'Swimming',   emoji: '' }, { name: 'Padel',      emoji: '' },
+  { name: 'Boxing',     emoji: '' }, { name: 'CrossFit',   emoji: '' },
+  { name: 'Yoga',       emoji: '' }, { name: 'Badminton',  emoji: '' },
 ]
 </script>

@@ -44,7 +44,7 @@
           </div>
 
           <div v-else-if="!friends.length" class="card p-12 text-center text-gray-400">
-            <div class="text-5xl mb-3">🤝</div>
+            <div class="text-5xl mb-3"></div>
             <h3 class="font-bold text-gray-700">No friends yet</h3>
             <p class="text-sm mt-1">Find other athletes in the Explore tab!</p>
           </div>
@@ -73,7 +73,7 @@
         <!-- Pending Requests -->
         <div v-else>
           <div v-if="!pendingRequests.length" class="card p-12 text-center text-gray-400">
-            <div class="text-5xl mb-3">📬</div>
+            <div class="text-5xl mb-3"></div>
             <h3 class="font-bold text-gray-700">No pending requests</h3>
             <p class="text-sm mt-1">When someone wants to connect, it will show up here.</p>
           </div>

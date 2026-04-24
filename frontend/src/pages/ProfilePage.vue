@@ -14,9 +14,9 @@
 
           <!-- Info -->
           <div class="px-6 pb-6">
-            <div class="flex items-end justify-between -mt-10 mb-4">
+            <div class="flex items-end justify-between -mt-10 mb-4 ">
               <img :src="avatar" :alt="user?.name"
-                class="w-20 h-20 rounded-full object-cover ring-4 ring-white shadow-lg" />
+                class="w-20 h-20 rounded-full object-cover ring-4 ring-white shadow-lg z-50" />
               
               <div v-if="isOwnProfile">
                 <button @click="showEdit = true" class="btn-secondary !py-1.5 !px-4 !text-sm mb-1">
@@ -80,7 +80,7 @@
                 <PostCard v-for="p in myPosts" :key="p.id" :post="p" />
               </div>
               <div v-else class="text-center text-gray-400 py-8">
-                <div class="text-4xl mb-2">✍️</div>
+                <div class="text-4xl mb-2"></div>
                 <p class="text-sm">No posts yet.</p>
               </div>
             </template>
@@ -91,7 +91,7 @@
                 <EventCard v-for="e in myEvents" :key="e.id" :event="e" />
               </div>
               <div v-else class="text-center text-gray-400 py-8">
-                <div class="text-4xl mb-2">🏟</div>
+                <div class="text-4xl mb-2"></div>
                 <p class="text-sm">No events yet.</p>
               </div>
             </template>

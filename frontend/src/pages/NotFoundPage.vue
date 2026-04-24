@@ -3,7 +3,7 @@
     <div class="relative mb-8">
       <div class="text-[12rem] font-black text-gray-100 select-none">404</div>
       <div class="absolute inset-0 flex items-center justify-center">
-        <span class="text-8xl transform hover:scale-110 transition-transform duration-500 cursor-default">🚧</span>
+        <span class="text-8xl transform hover:scale-110 transition-transform duration-500 cursor-default"></span>
       </div>
     </div>
     

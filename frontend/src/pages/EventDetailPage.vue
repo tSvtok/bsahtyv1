@@ -16,7 +16,7 @@
 
         <!-- Error state -->
         <div v-else-if="error" class="card p-12 text-center">
-          <div class="text-5xl mb-4">⚠️</div>
+          <div class="text-5xl mb-4"></div>
           <h2 class="text-xl font-bold mb-2">Event not found</h2>
           <p class="text-gray-500 mb-6">The event you're looking for doesn't exist or has been removed.</p>
           <router-link to="/events" class="btn-primary inline-flex">Go back to Events</router-link>
@@ -190,8 +190,8 @@ const error   = ref(null)
 const event   = ref(null)
 
 const sportEmojiMap = {
-  football: '⚽', basketball: '🏀', tennis: '🎾', volleyball: '🏐',
-  swimming: '🏊', running: '🏃', cycling: '🚴', padel: '🎾', default: '🏅'
+  football: '', basketball: '', tennis: '', volleyball: '',
+  swimming: '', running: '', cycling: '', padel: '', default: ''
 }
 
 const sportEmoji = computed(() => sportEmojiMap[event.value?.sport?.toLowerCase()] || sportEmojiMap.default)
