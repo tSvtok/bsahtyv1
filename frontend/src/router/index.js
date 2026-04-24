@@ -25,8 +25,9 @@ const router = createRouter({
   scrollBehavior: () => ({ top: 0 }),
 })
 
-router.beforeEach((to) => {
+router.beforeEach(async (to) => {
   const auth = useAuthStore()
+  await auth.waitForInit()
   
   // Update Title
   const baseTitle = 'B-SSAHTY'
