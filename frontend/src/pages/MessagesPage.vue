@@ -25,7 +25,7 @@
         </div>
 
         <div v-else-if="!filteredConversations.length" class="card p-10 text-center text-gray-400">
-          <div class="text-5xl mb-3">💬</div>
+          <div class="text-5xl mb-3"></div>
           <p class="font-medium text-gray-700">No conversations yet</p>
           <p class="text-sm mt-1">Connect with athletes and start chatting!</p>
         </div>

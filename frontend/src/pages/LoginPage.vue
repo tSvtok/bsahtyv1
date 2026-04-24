@@ -11,7 +11,7 @@
           <span class="w-12 h-12 rounded-2xl bg-gradient-primary flex items-center justify-center text-white text-xl font-black shadow-xl">B</span>
           <span class="text-2xl font-black text-white tracking-tight">B-SSAHTY</span>
         </router-link>
-        <h2 class="text-3xl font-black text-white leading-snug mb-4">Welcome back,<br />Athlete. 🏅</h2>
+        <h2 class="text-3xl font-black text-white leading-snug mb-4">Welcome back,<br />Athlete. </h2>
         <p class="text-gray-400">Your teammates are waiting for you.<br />Jump back into the game.</p>
         <div class="flex flex-wrap justify-center gap-2 mt-8">
           <span v-for="s in sports" :key="s" class="px-3 py-1.5 rounded-full bg-gray-800/60 border border-gray-700 text-sm text-gray-400">{{ s }}</span>
@@ -64,7 +64,7 @@
 
           <button type="submit" class="btn-primary w-full justify-center mt-1" :disabled="auth.loading">
             <svg v-if="auth.loading" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-            {{ auth.loading ? 'Signing in…' : 'Sign In' }}
+            {{ auth.loading ? 'Signing in' : 'Sign In' }}
           </button>
         </form>
       </div>
@@ -83,7 +83,7 @@ const showPwd = ref(false)
 const form   = reactive({ email: '', password: '' })
 const errors = reactive({ email: '', password: '' })
 
-const sports = ['⚽ Football', '🏀 Basketball', '🎾 Tennis', '🏐 Volleyball', '🏃 Running', '🚴 Cycling']
+const sports = [' Football', ' Basketball', ' Tennis', ' Volleyball', ' Running', ' Cycling']
 
 function validate() {
   errors.email = errors.password = ''

@@ -11,7 +11,7 @@
           <span class="w-12 h-12 rounded-2xl bg-gradient-primary flex items-center justify-center text-white text-xl font-black shadow-xl">B</span>
           <span class="text-2xl font-black text-white tracking-tight">B-SSAHTY</span>
         </router-link>
-        <h2 class="text-3xl font-black text-white leading-snug mb-4">Join the community.<br />Play more. 🏅</h2>
+        <h2 class="text-3xl font-black text-white leading-snug mb-4">Join the community.<br />Play more. </h2>
         <p class="text-gray-400 text-sm leading-relaxed">Connect with local athletes,<br />discover games, and never train alone.</p>
         <!-- Animated avatars row -->
         <div class="flex justify-center -space-x-3 mt-8">
@@ -111,7 +111,7 @@
 
           <button type="submit" class="btn-primary w-full justify-center mt-1" :disabled="auth.loading">
             <svg v-if="auth.loading" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-            {{ auth.loading ? 'Creating account…' : 'Create Account 🏅' }}
+            {{ auth.loading ? 'Creating account' : 'Create Account ' }}
           </button>
 
           <p class="text-xs text-gray-400 text-center">By registering you agree to our Terms of Service and Privacy Policy.</p>
