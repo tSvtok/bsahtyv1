@@ -34,16 +34,15 @@ class ConversationController extends Controller
         $userIds = array_unique($userIds);
         sort($userIds);
 
-        // For 1-on-1, check if exists
-        if (count($userIds) === 2) {
-            $existing = Conversation::has('users', 2)
-                ->whereHas('users', function ($q) use ($userIds) {
-                    $q->whereIn('user_id', $userIds);
-                }, '=', 2)->first();
+        // Check if a conversation already exists with the exact same users
+        $existing = Conversation::whereHas('users', function ($q) use ($userIds) {
+            $q->whereIn('users.id', $userIds);
+        }, '=', count($userIds))
+        ->has('users', count($userIds))
+        ->first();
 
-            if ($existing) {
-                return response()->json($existing->load('users'));
-            }
+        if ($existing) {
+            return response()->json($existing->load('users'));
         }
 
         $conversation = Conversation::create();
