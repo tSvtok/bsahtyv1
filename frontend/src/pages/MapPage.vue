@@ -21,7 +21,7 @@
           </div>
         </div>
 
-        <div class="flex flex-col lg:flex-row flex-1 overflow-hidden" style="height: calc(100vh - 8.5rem);">
+        <div class="flex flex-col lg:flex-row flex-1 overflow-hidden relative">
           <!-- Map container -->
           <div class="relative flex-1 min-h-[300px] lg:min-h-0 z-0">
             <div ref="mapEl" class="absolute inset-0" />
@@ -40,12 +40,12 @@
 
           <!-- Spots panel -->
           <div 
-            class="w-full lg:w-85 shrink-0 flex flex-col border-t lg:border-t-0 lg:border-l border-gray-100 bg-white transition-all duration-300 ease-in-out"
+            class="w-full lg:w-96 shrink-0 flex flex-col border-t lg:border-t-0 lg:border-l border-gray-100 bg-white transition-all duration-300 ease-in-out z-10"
             :class="[
-              showMobileList ? 'h-[60vh] opacity-100' : 'h-0 lg:h-full opacity-0 lg:opacity-100 pointer-events-none lg:pointer-events-auto'
+              showMobileList ? 'h-[50vh] lg:h-full opacity-100' : 'h-0 lg:h-full opacity-0 lg:opacity-100 pointer-events-none lg:pointer-events-auto'
             ]"
           >
-            <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+            <div class="p-4 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-20">
               <h2 class="font-bold text-gray-900">Nearby Spots</h2>
               <span class="badge badge-primary">{{ appStore.spots.length }}</span>
             </div>
@@ -78,7 +78,9 @@
                         <span class="w-1.5 h-1.5 rounded-full bg-green-500" />
                         <span class="text-[10px] font-bold text-green-600 uppercase tracking-wider">Active</span>
                       </span>
-                      <span class="text-[10px] text-gray-400 font-medium px-1.5 py-0.5 bg-gray-100 rounded">2.4 km</span>
+                      <span v-if="getDistance(spot.lat || spot.latitude || spot.coordinates?.lat, spot.lng || spot.longitude || spot.coordinates?.lng)" class="text-[10px] text-gray-400 font-medium px-1.5 py-0.5 bg-gray-100 rounded">
+                        {{ getDistance(spot.lat || spot.latitude || spot.coordinates?.lat, spot.lng || spot.longitude || spot.coordinates?.lng) }} km
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -117,52 +119,90 @@ const showMobileList = ref(false)
 const newSpotCoords = ref(null)
 let leafletMap = null
 
+watch(showMobileList, () => {
+  setTimeout(() => leafletMap?.invalidateSize(), 350)
+})
+
 function handleSpotClick(spot) {
   flyTo(spot)
   showMobileList.value = false
 }
 
+const userCoords = ref(null)
+
+function getDistance(spotLat, spotLng) {
+  if (!userCoords.value || !spotLat || !spotLng) return null
+  const R = 6371 // Radius of the earth in km
+  const dLat = (spotLat - userCoords.value.lat) * Math.PI / 180
+  const dLon = (spotLng - userCoords.value.lng) * Math.PI / 180
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(userCoords.value.lat * Math.PI / 180) * Math.cos(spotLat * Math.PI / 180) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2)
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+  const d = R * c
+  return d.toFixed(1)
+}
+
 const spotEmoji = (type) => ({
   gym: '🏋️', court: '🏀', stadium: '🏟', pool: '🏊',
-  park: '🌳', track: '🏃', default: '📍'
+  park: '🌳', track: '🏃', fitness: '💪', default: '📍'
 }[type?.toLowerCase()] || '📍')
 
 onMounted(async () => {
   await appStore.fetchSpots()
 
   const L = (await import('leaflet')).default
+  const { nextTick } = await import('vue')
 
-  leafletMap = L.map(mapEl.value).setView([36.7538, 3.0588], 12)
+  await nextTick()
+
+  leafletMap = L.map(mapEl.value, {
+    zoomControl: true,
+    tap: false // Recommended for mobile
+  }).setView([36.7538, 3.0588], 12)
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors'
+    attribution: '© OpenStreetMap contributors',
+    maxZoom: 19
   }).addTo(leafletMap)
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors'
-  }).addTo(leafletMap)
+  // Force size recalculation
+  setTimeout(() => {
+    leafletMap?.invalidateSize()
+  }, 250)
 
   // Markers layer group
   const markersLayer = L.layerGroup().addTo(leafletMap)
 
   // Watch for spots changes to update markers
   watch(() => appStore.spots, (newSpots) => {
+    if (!leafletMap || !markersLayer) return
     markersLayer.clearLayers()
+    
     const orange = L.divIcon({
-      html: `<div style="width:32px;height:32px;background:#f97316;border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(249,115,22,.5);display:flex;align-items:center;justify-content:center;font-size:14px;">📍</div>`,
-      className: '', iconSize: [32, 32], iconAnchor: [16, 16],
+      html: `<div style="width:32px;height:32px;background:#f97316;border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(249,115,22,.5);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;">📍</div>`,
+      className: 'custom-spot-icon', 
+      iconSize: [32, 32], 
+      iconAnchor: [16, 16],
     })
 
     newSpots.forEach(spot => {
-      if (spot.lat && spot.lng) {
-        L.marker([spot.lat, spot.lng], { icon: orange })
+      const lat = spot.lat || spot.latitude || spot.coordinates?.lat
+      const lng = spot.lng || spot.longitude || spot.coordinates?.lng
+      
+      if (lat && lng) {
+        L.marker([lat, lng], { icon: orange })
           .addTo(markersLayer)
-          .bindPopup(`<b>${spot.name}</b><br>${spot.address || spot.type}`)
+          .bindPopup(`
+            <div class="p-1">
+              <p class="font-bold text-gray-900">${spot.name}</p>
+              <p class="text-xs text-gray-500 mt-0.5">${spot.address || spot.type || ''}</p>
+            </div>
+          `)
       }
     })
   }, { immediate: true })
-
-  // Handle map click to suggest spot
 
   // Handle map click to suggest spot
   leafletMap.on('click', (e) => {
@@ -181,6 +221,7 @@ async function locateMe() {
   navigator.geolocation.getCurrentPosition(
     async ({ coords }) => {
       const { latitude: lat, longitude: lng } = coords
+      userCoords.value = { lat, lng }
       console.log('Position found:', lat, lng)
       if (leafletMap) {
         leafletMap.setView([lat, lng], 15)
