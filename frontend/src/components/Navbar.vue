@@ -58,7 +58,7 @@
           <div v-if="showNotifications" class="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50">
             <div class="p-4 border-b border-gray-100 flex items-center justify-between">
               <h3 class="font-bold text-sm">Notifications</h3>
-              <button @click="notifications = []" class="text-xs text-orange-500 font-medium hover:underline">Clear all</button>
+              <button @click="markAllRead" class="text-xs text-orange-500 font-medium hover:underline">Clear all</button>
             </div>
             <div class="max-h-96 overflow-y-auto">
               <div v-if="notifications.length === 0" class="p-8 text-center text-gray-400">
@@ -157,7 +157,7 @@ function handleSearch() {
 }
 
 const avatar = computed(() =>
-  auth.user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(auth.user?.name || 'A')}&background=f97316&color=fff`
+  auth.user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(auth.user?.name || 'A')}&background=f97316&color=fff`
 )
 
 const handleLogout = async () => {
@@ -209,26 +209,33 @@ watch(() => auth.user?.id, (newId) => {
   else echo.leave(`user.${auth.user?.id}`)
 })
 
-async function fetchPendingRequests() {
+async function fetchNotifications() {
+  if (!auth.isLoggedIn) return
   try {
-    const res = await api.get('/friendships?status=PENDING')
-    const pending = res.data.data
-    pending.forEach(f => {
-      // Only show if I am the receiver
-      if (f.friend_id === auth.user?.id) {
-        addNotification({
-          title: 'Pending Request',
-          body: `${f.user?.name || 'Someone'} wants to be your friend!`,
-          icon: '👤'
-        })
-      }
-    })
+    const res = await api.get('/notifications')
+    // Laravel notifications are nested under data.data due to pagination
+    const items = res.data.data.data || []
+    notifications.value = items.map(n => ({
+      id: n.id,
+      title: n.data.title || 'Notification',
+      body: n.data.body || n.data.message || '',
+      icon: n.data.icon || '🔔',
+      time: new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      read: !!n.read_at
+    }))
+  } catch (err) { console.error('Failed to fetch notifications:', err) }
+}
+
+async function markAllRead() {
+  try {
+    await api.post('/notifications/read-all')
+    notifications.value = []
   } catch (err) { console.error(err) }
 }
 
 onMounted(() => {
   setupEcho()
-  fetchPendingRequests()
+  fetchNotifications()
   window.addEventListener('scroll', handleScroll)
 })
 
