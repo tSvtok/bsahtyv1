@@ -1,5 +1,8 @@
 <template>
-  <article class="card p-5 flex flex-col gap-3 cursor-pointer group">
+  <article 
+    class="card p-5 flex flex-col gap-3 cursor-pointer group hover:border-orange-200 transition-all active:scale-[0.98]"
+    @click="router.push(`/events/${event.id}`)"
+  >
     <!-- Header row -->
     <div class="flex items-start justify-between gap-3">
       <div class="flex-1 min-w-0">
@@ -62,10 +65,12 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { eventsApi } from '@/services/api'
 import echo from '@/services/echo'
 
 const props = defineProps({ event: { type: Object, required: true } })
+const router = useRouter()
 const joined = ref(props.event.is_joined || false)
 const realTimeParticipantCount = ref(props.event.participants_count || 0)
 
