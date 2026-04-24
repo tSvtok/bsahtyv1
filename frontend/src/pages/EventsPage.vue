@@ -44,7 +44,7 @@
         </div>
 
         <div v-else-if="!appStore.events.length" class="card p-12 text-center text-gray-400">
-          <div class="text-5xl mb-3">🏟</div>
+          <div class="text-5xl mb-3"></div>
           <h3 class="font-semibold text-gray-700 mb-1">No events found</h3>
           <p class="text-sm">Try a different sport or organize your own match!</p>
         </div>

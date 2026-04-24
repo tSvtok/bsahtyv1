@@ -22,7 +22,7 @@
         <div class="card p-4 flex items-center gap-3 mb-6 cursor-pointer hover:shadow-md transition-shadow" @click="showCreatePost = true">
           <img :src="myAvatar" class="w-10 h-10 rounded-full object-cover" />
           <div class="flex-1 px-4 py-2.5 bg-gray-50 rounded-full text-gray-400 text-sm hover:bg-gray-100 transition-colors">
-            What's happening in your world, {{ auth.user?.name?.split(' ')[0] || 'Athlete' }}? 🏅
+            What's happening in your world, {{ auth.user?.name?.split(' ')[0] || 'Athlete' }}? 
           </div>
           <button class="btn-primary !py-2 !px-4 !text-sm shrink-0" @click.stop="showCreatePost = true">Post</button>
         </div>
@@ -54,7 +54,7 @@
         </div>
 
         <div v-else-if="!appStore.posts.length" class="card p-10 text-center text-gray-400">
-          <div class="text-5xl mb-3">🏅</div>
+          <div class="text-5xl mb-3"></div>
           <h3 class="font-semibold text-gray-700 mb-1">No posts yet</h3>
           <p class="text-sm">Be the first to share something with the community!</p>
         </div>

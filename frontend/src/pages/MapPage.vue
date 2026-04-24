@@ -86,7 +86,7 @@
                 </div>
 
                 <div v-if="!appStore.spots.length" class="p-12 text-center">
-                  <div class="text-5xl mb-4 opacity-20">📍</div>
+                  <div class="text-5xl mb-4 opacity-20"></div>
                   <h3 class="font-bold text-gray-900 mb-1">No spots nearby</h3>
                   <p class="text-sm text-gray-500">Try zooming out or moving the map to find active spots.</p>
                 </div>
@@ -145,9 +145,9 @@ function getDistance(spotLat, spotLng) {
 }
 
 const spotEmoji = (type) => ({
-  gym: '🏋️', court: '🏀', stadium: '🏟', pool: '🏊',
-  park: '🌳', track: '🏃', fitness: '💪', default: '📍'
-}[type?.toLowerCase()] || '📍')
+  gym: '', court: '', stadium: '', pool: '',
+  park: '', track: '', fitness: '', default: ''
+}[type?.toLowerCase()] || '')
 
 onMounted(async () => {
   await appStore.fetchSpots()
@@ -181,7 +181,7 @@ onMounted(async () => {
     markersLayer.clearLayers()
     
     const orange = L.divIcon({
-      html: `<div style="width:32px;height:32px;background:#f97316;border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(249,115,22,.5);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;">📍</div>`,
+      html: `<div style="width:32px;height:32px;background:#f97316;border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(249,115,22,.5);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;"></div>`,
       className: 'custom-spot-icon', 
       iconSize: [32, 32], 
       iconAnchor: [16, 16],

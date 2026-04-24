@@ -38,7 +38,7 @@
         </div>
 
         <div v-else-if="!filteredUsers.length" class="card p-10 text-center text-gray-400">
-          <div class="text-5xl mb-3">🔍</div>
+          <div class="text-5xl mb-3"></div>
           <p>No athletes found matching your search.</p>
         </div>
 
