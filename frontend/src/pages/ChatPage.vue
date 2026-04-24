@@ -41,7 +41,7 @@
                   ? 'bg-orange-500 text-white rounded-br-md'
                   : 'bg-white text-gray-800 shadow-sm rounded-bl-md'"
               >
-                {{ msg.body }}
+                {{ msg.content }}
                 <p class="text-[10px] mt-1 opacity-60 text-right">{{ formatTime(msg.created_at) }}</p>
               </div>
             </div>
@@ -92,7 +92,7 @@ const otherUser   = ref(null)
 const conversationId = computed(() => route.params.id)
 
 const otherAvatar = computed(() =>
-  otherUser.value?.avatar ||
+  otherUser.value?.avatar_url ||
   `https://ui-avatars.com/api/?name=${encodeURIComponent(otherUser.value?.name || 'A')}&background=f97316&color=fff&size=60`
 )
 
@@ -110,17 +110,17 @@ async function scrollToBottom() {
 
 async function sendMessage() {
   if (!newMessage.value.trim() || sending.value) return
-  const body = newMessage.value.trim()
+  const content = newMessage.value.trim()
   newMessage.value = ''
   sending.value = true
 
   // Optimistic
   const tempId = Date.now()
-  messages.value.push({ id: tempId, body, user_id: auth.user?.id, created_at: new Date().toISOString() })
+  messages.value.push({ id: tempId, content, user_id: auth.user?.id, created_at: new Date().toISOString() })
   await scrollToBottom()
 
   try {
-    const res = await messagingApi.send({ conversation_id: conversationId.value, body })
+    const res = await messagingApi.send({ conversation_id: conversationId.value, content })
     // Replace temp message with actual data
     const idx = messages.value.findIndex(m => m.id === tempId)
     if (idx !== -1) messages.value[idx] = res.data.data
