@@ -21,6 +21,8 @@ class Event extends Model
         'status',
         'organizer_id',
         'spot_id',
+        'latitude',
+        'longitude',
     ];
 
     protected $appends = ['participants_count', 'is_joined', 'image_url'];
