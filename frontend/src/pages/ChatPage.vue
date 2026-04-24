@@ -145,7 +145,7 @@ onMounted(async () => {
 
   // Real-time
   echo.private(`conversation.${conversationId.value}`)
-    .listen('MessageSent', (e) => {
+    .listen('.message.new', (e) => {
       // Don't duplicate if it's from me (optimistic update handles it)
       if (e.message.user_id !== auth.user?.id) {
         messages.value.push(e.message)
