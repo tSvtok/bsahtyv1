@@ -61,12 +61,22 @@ class EventController extends Controller
             return response()->json(['data' => $event->load('participants')]);
         }
 
+        // Ownership check
+        if ($event->organizer_id !== $request->user()->id && $request->user()->role !== 'ADMIN') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $event->update($request->validated());
         return response()->json(['data' => $event]);
     }
 
-    public function destroy(Event $event)
+    public function destroy(\Illuminate\Http\Request $request, Event $event)
     {
+        // Ownership check
+        if ($event->organizer_id !== $request->user()->id && $request->user()->role !== 'ADMIN') {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
         $event->delete();
         return response()->json(null, 204);
     }
