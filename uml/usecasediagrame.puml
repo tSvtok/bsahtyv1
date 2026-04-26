@@ -28,11 +28,13 @@ package "B-SSAHTY Platform" {
         usecase "Comment & React" as UC6
         usecase "Manage Friendships" as UC7
         usecase "Real-time Chat" as UC8
+        usecase "Receive Notifications" as UC16
     }
 
     package "Events & Spots" {
         usecase "View Interactive Map" as UC9
         usecase "Discover Sports Spots" as UC10
+        usecase "Propose New Spot" as UC17
         usecase "Organize Match/Event" as UC11
         usecase "Join/Leave Match" as UC12
     }
@@ -57,6 +59,8 @@ user --> UC9
 user --> UC10
 user --> UC11
 user --> UC12
+user --> UC16
+user --> UC17
 
 admin --> UC13
 admin --> UC14

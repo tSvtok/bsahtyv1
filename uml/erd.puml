@@ -36,13 +36,12 @@ table(users) {
 table(spots) {
     primary_key(id): BIGINT
     column(name): VARCHAR
-    column(description): TEXT
-    column(latitude): DECIMAL
-    column(longitude): DECIMAL
+    column(type): VARCHAR
     column(address): VARCHAR
+    column(city): VARCHAR
+    column(coordinates): JSON
     column(image): VARCHAR
     column(status): VARCHAR
-    foreign_key(created_by): BIGINT
     column(created_at): TIMESTAMP
     column(updated_at): TIMESTAMP
 }
@@ -50,14 +49,15 @@ table(spots) {
 table(events) {
     primary_key(id): BIGINT
     column(title): VARCHAR
-    column(description): TEXT
-    column(date): DATE
-    column(time): TIME
+    column(sport): VARCHAR
+    column(location): VARCHAR
+    column(date): TIMESTAMP
     column(latitude): DECIMAL
     column(longitude): DECIMAL
     column(max_participants): INT
     column(image): VARCHAR
-    foreign_key(user_id): BIGINT
+    column(status): VARCHAR
+    foreign_key(organizer_id): BIGINT
     foreign_key(spot_id): BIGINT
     column(created_at): TIMESTAMP
     column(updated_at): TIMESTAMP

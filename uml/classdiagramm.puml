@@ -86,26 +86,27 @@ package "Events & Locations" {
     class Spot {
         +id: BigInt
         +name: String
-        +description: Text
-        +latitude: Decimal
-        +longitude: Decimal
+        +type: String
         +address: String
+        +city: String
+        +coordinates: JSON
         +image: String
         +status: SpotStatus
-        +created_by: BigInt
     }
 
     class Event {
         +id: BigInt
         +title: String
-        +description: Text
-        +date: Date
-        +time: Time
+        +sport: String
+        +location: String
+        +date: DateTime
         +latitude: Decimal
         +longitude: Decimal
         +max_participants: Integer
-        +user_id: BigInt
         +image: String
+        +status: EventStatus
+        +organizer_id: BigInt
+        +spot_id: BigInt
     }
 }
 
