@@ -14,7 +14,6 @@
           <img :src="otherAvatar" class="w-9 h-9 rounded-full object-cover" />
           <div>
             <p class="font-semibold text-sm">{{ otherUser?.name || 'Athlete' }}</p>
-            <p class="text-xs text-green-500 font-medium">Online</p>
           </div>
           <div class="flex-1" />
           <button class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center text-gray-500 transition-colors">

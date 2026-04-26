@@ -23,7 +23,7 @@
                   Edit Profile
                 </button>
               </div>
-              <div v-else class="flex gap-2">
+              <div v-else class="flex gap-2 flex-wrap">
                 <button v-if="friendshipStatus === 'NONE'" @click="sendFriendRequest" class="btn-primary !py-1.5 !px-4 !text-sm mb-1">
                   Add Friend
                 </button>
@@ -34,6 +34,20 @@
                   Friends
                 </button>
                 <button @click="startConversation" class="btn-secondary !py-1.5 !px-4 !text-sm mb-1">Message</button>
+                
+                <!-- Admin ban button -->
+                <button 
+                  v-if="isAdmin && !isOwnProfile"
+                  @click="showBanModal = true"
+                  :class="[
+                    'py-1.5 px-4 text-sm mb-1 rounded-full font-semibold transition-colors border',
+                    user?.is_banned 
+                      ? 'btn-secondary text-green-600 hover:bg-green-50' 
+                      : 'bg-red-500 text-white border-red-500 hover:bg-red-600 hover:border-red-600'
+                  ]"
+                >
+                  {{ user?.is_banned ? 'Unban User' : 'Ban User' }}
+                </button>
               </div>
             </div>
 
@@ -119,6 +133,53 @@
     </div>
 
     <EditProfileModal v-model="showEdit" />
+
+    <!-- Ban Modal -->
+    <div v-if="showBanModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div class="card p-6 max-w-sm w-full">
+        <h2 class="text-lg font-bold mb-4">{{ user?.is_banned ? 'Unban User' : 'Ban User' }}</h2>
+        
+        <div v-if="!user?.is_banned" class="mb-4">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Ban Reason (optional)</label>
+          <textarea 
+            v-model="banReason"
+            placeholder="Enter reason for banning this user..."
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+            rows="3"
+          />
+        </div>
+
+        <div v-if="user?.is_banned" class="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <p class="text-sm text-yellow-800">Are you sure you want to unban this user? They will regain access to the platform.</p>
+        </div>
+
+        <div v-if="!user?.is_banned" class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+          <p class="text-sm text-red-800">This user will be banned from the platform and unable to login or access content.</p>
+        </div>
+
+        <div class="flex gap-3">
+          <button 
+            @click="showBanModal = false"
+            class="flex-1 btn-secondary"
+            :disabled="banLoading"
+          >
+            Cancel
+          </button>
+          <button 
+            @click="user?.is_banned ? unbanUserHandler() : banUserHandler()"
+            :class="[
+              'flex-1 text-white font-semibold py-2 px-4 rounded-lg transition-colors',
+              user?.is_banned 
+                ? 'bg-green-600 hover:bg-green-700 disabled:bg-gray-400' 
+                : 'bg-red-600 hover:bg-red-700 disabled:bg-gray-400'
+            ]"
+            :disabled="banLoading"
+          >
+            {{ banLoading ? 'Processing...' : (user?.is_banned ? 'Unban' : 'Ban') }}
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -132,6 +193,7 @@ import EventCard from '@/components/EventCard.vue'
 import EditProfileModal from '@/modals/EditProfileModal.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useAppStore } from '@/stores/app'
+import { useToastStore } from '@/stores/toast'
 import api, { messagingApi } from '@/services/api'
 import { useRouter } from 'vue-router'
 
@@ -139,16 +201,21 @@ const route    = useRoute()
 const router   = useRouter()
 const auth     = useAuthStore()
 const appStore = useAppStore()
+const toastStore = useToastStore()
 
 const showEdit  = ref(false)
+const showBanModal = ref(false)
 const activeTab = ref('Posts')
 const tabs = ['Posts', 'Events', 'About']
+const banReason = ref('')
+const banLoading = ref(false)
 
 const otherUser = ref(null)
 const friendship = ref(null)
 const loading = ref(false)
 
 const isOwnProfile = computed(() => !route.params.id || parseInt(route.params.id) === auth.user?.id)
+const isAdmin = computed(() => auth.user?.role === 'ADMIN')
 const user = computed(() => isOwnProfile.value ? auth.user : otherUser.value)
 
 const friendshipStatus = computed(() => {
@@ -218,6 +285,43 @@ async function startConversation() {
     router.push(`/messages/${res.data.id}`)
   } catch (e) {
     console.error('Failed to start conversation', e)
+  }
+}
+
+async function banUserHandler() {
+  if (!user.value) return
+  
+  banLoading.value = true
+  try {
+    await api.patch(`/admin/users/${user.value.id}/ban`, { 
+      reason: banReason.value || null 
+    })
+    user.value.is_banned = true
+    showBanModal.value = false
+    banReason.value = ''
+    toastStore.show('Success', 'User banned successfully')
+  } catch (e) {
+    console.error('Failed to ban user', e)
+    toastStore.show('Error', 'Failed to ban user', 'error')
+  } finally {
+    banLoading.value = false
+  }
+}
+
+async function unbanUserHandler() {
+  if (!user.value) return
+  
+  banLoading.value = true
+  try {
+    await api.patch(`/admin/users/${user.value.id}/unban`)
+    user.value.is_banned = false
+    showBanModal.value = false
+    toastStore.show('Success', 'User unbanned successfully')
+  } catch (e) {
+    console.error('Failed to unban user', e)
+    toastStore.show('Error', 'Failed to unban user', 'error')
+  } finally {
+    banLoading.value = false
   }
 }
 

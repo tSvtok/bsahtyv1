@@ -10,14 +10,24 @@ class AdminController extends Controller
 {
     public function banUser(Request $request, User $user)
     {
+        $validated = $request->validate([
+            'reason' => 'nullable|string|max:500',
+        ]);
+        
         $user->update(['is_banned' => true]);
-        return response()->json(['message' => 'User banned successfully']);
+        return response()->json([
+            'message' => 'User banned successfully',
+            'data' => $user,
+        ]);
     }
 
     public function unbanUser(Request $request, User $user)
     {
         $user->update(['is_banned' => false]);
-        return response()->json(['message' => 'User unbanned successfully']);
+        return response()->json([
+            'message' => 'User unbanned successfully',
+            'data' => $user,
+        ]);
     }
 
     public function approveSpot(Request $request, Spot $spot)
