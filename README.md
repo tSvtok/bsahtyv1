@@ -29,8 +29,22 @@ B-SSAHTY is a modern social platform for athletes to connect, share their sports
 1. Navigate to the `backend` directory.
 2. Run `docker-compose up -d`.
 3. Install dependencies: `docker exec -u 1000 ecomcom-app composer install`.
-4. Run migrations & seed: `docker exec -u 1000 ecomcom-app php artisan migrate:fresh --seed`.
+4. Run migrations & seed: `docker exec -u 1000 ecomcom-app php artisan db:fresh-light` (fast) or `php artisan migrate:fresh --seed` (full data).
 5. Link storage: `docker exec -u 1000 ecomcom-app php artisan storage:link`.
+
+**For development iterations, use:**
+```bash
+# Fast reset with minimal data (2 seconds) - Recommended for daily work
+docker exec -u 1000 ecomcom-app php artisan db:fresh-light
+
+# Full reset with realistic data (5 seconds) - For comprehensive testing
+docker exec -u 1000 ecomcom-app php artisan db:fresh-full
+
+# Just run pending migrations (preserve data)
+docker exec -u 1000 ecomcom-app php artisan migrate
+```
+
+See [DEV_WORKFLOW.md](DEV_WORKFLOW.md) for detailed development commands and [MIGRATION_OPTIMIZATION_GUIDE.md](MIGRATION_OPTIMIZATION_GUIDE.md) for architecture details.
 
 ### Frontend Setup
 1. Navigate to the `frontend` directory.

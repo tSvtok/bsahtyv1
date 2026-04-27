@@ -13,8 +13,16 @@ return new class extends Migration
     {
         Schema::create('events', function (Blueprint $table) {
             $table->id();
+            $table->string('title');
+            $table->foreignId('organizer_id')->nullable()->constrained('users')->onDelete('cascade');
+            $table->foreignId('spot_id')->nullable()->constrained('spots')->onDelete('set null');
+            $table->string('sport');
+            $table->string('location');
+            $table->decimal('latitude', 10, 8)->nullable();
+            $table->decimal('longitude', 11, 8)->nullable();
             $table->dateTime('date');
             $table->integer('max_participants');
+            $table->string('image')->nullable();
             $table->string('status')->default('OPEN'); // OPEN, FULL, CLOSED
             $table->timestamps();
         });

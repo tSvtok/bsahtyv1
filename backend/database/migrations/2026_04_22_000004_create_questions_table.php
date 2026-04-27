@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('questions', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
+            $table->string('title')->nullable();
             $table->text('content');
+            $table->string('image')->nullable();
             $table->string('sport_category'); // FOOTBALL, TENNIS, etc.
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('spot_id')->nullable()->constrained()->nullOnDelete();

@@ -32,5 +32,7 @@
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
+        <!-- Use TestingSeeder for optimized test database setup -->
+        <env name="DB_SEEDER" value="TestingSeeder"/>
     </php>
 </phpunit>

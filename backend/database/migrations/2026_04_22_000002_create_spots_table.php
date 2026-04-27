@@ -14,8 +14,12 @@ return new class extends Migration
         Schema::create('spots', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->geometry('coordinates', subtype: 'point', srid: 4326);
+            $table->string('type')->nullable();
+            $table->string('address')->nullable();
+            $table->string('city')->nullable();
+            $table->json('coordinates')->nullable();
             $table->string('status')->default('PENDING'); // PENDING, APPROVED, REJECTED
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }
