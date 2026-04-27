@@ -1,162 +1,181 @@
-@startuml B-SSAHTY Class Diagram
+@startuml
 
+skinparam classAttributeIconSize 0
+skinparam roundcorner 10
 skinparam class {
     BackgroundColor White
     BorderColor Orange
-    ArrowColor Gray
 }
 
 ' ========================
-' ENUMS
+' ENUMS (kept simple)
 ' ========================
-enum UserRole {
-    ATHLETE
-    ADMIN
+
+enum Role {
+  USER
+  ADMIN
 }
 
-enum SpotStatus {
-    PENDING
-    APPROVED
-    REJECTED
+enum Level {
+  BEGINNER
+  INTERMEDIATE
+  PRO
 }
 
-enum ReactionType {
-    LIKE
-    LOVE
-    LAUGH
-    SAD
+enum Status {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum EventStatus {
+  OPEN
+  FULL
+  CLOSED
 }
 
 enum FriendshipStatus {
-    PENDING
-    ACCEPTED
-    REJECTED
+  PENDING
+  ACCEPTED
+  BLOCKED
+}
+
+enum ReactionType {
+  LIKE
+  DISLIKE
+}
+
+enum Sport {
+  FOOTBALL
+  TENNIS
+  BASKETBALL
+  RUNNING
+  YOGA
+  CYCLING
+  SWIMMING
+  OTHER
 }
 
 ' ========================
-' MODELS
+' MAIN ENTITIES
 ' ========================
 
-package "User Management" {
-    class User {
-        +id: BigInt
-        +name: String
-        +email: String
-        +role: UserRole
-        +avatar_url: String
-        +city: String
-        +sports: JSON
-        +isBanned: Boolean
-        +last_online_at: DateTime
-    }
-    
-    class Friendship {
-        +id: BigInt
-        +status: FriendshipStatus
-        +user_id: BigInt
-        +friend_id: BigInt
-    }
+class User {
+  id
+  name
+  email
+  bio
+  location
+  avatar
+  city
+  sports
+  is_banned
+  role
+  level
 }
 
-package "Community & Social" {
-    class Question {
-        +id: BigInt
-        +content: Text
-        +category: String
-        +user_id: BigInt
-    }
-
-    class Comment {
-        +id: BigInt
-        +content: Text
-        +user_id: BigInt
-        +question_id: BigInt
-    }
-
-    class Reaction {
-        +id: BigInt
-        +type: ReactionType
-        +user_id: BigInt
-        +reactable_id: BigInt
-        +reactable_type: String
-    }
+class Spot {
+  id
+  name
+  type
+  address
+  city
+  status
+  image
 }
 
-package "Events & Locations" {
-    class Spot {
-        +id: BigInt
-        +name: String
-        +type: String
-        +address: String
-        +city: String
-        +coordinates: JSON
-        +image: String
-        +status: SpotStatus
-    }
-
-    class Event {
-        +id: BigInt
-        +title: String
-        +sport: String
-        +location: String
-        +date: DateTime
-        +latitude: Decimal
-        +longitude: Decimal
-        +max_participants: Integer
-        +image: String
-        +status: EventStatus
-        +organizer_id: BigInt
-        +spot_id: BigInt
-    }
+class Event {
+  id
+  title
+  sport
+  date
+  location
+  max_participants
+  status
+  organizer_id
+  spot_id
 }
 
-package "Communication" {
-    class Conversation {
-        +id: BigInt
-        +created_at: DateTime
-    }
+class Question {
+  id
+  title
+  content
+  image
+  sport
+  user_id
+  spot_id
+  event_id
+}
 
-    class Message {
-        +id: BigInt
-        +content: Text
-        +is_read: Boolean
-        +user_id: BigInt
-        +conversation_id: BigInt
-    }
+class Comment {
+  id
+  content
+  user_id
+  question_id
+}
 
-    class Notification {
-        +id: UUID
-        +type: String
-        +data: JSON
-        +read_at: DateTime
-    }
+class Reaction {
+  id
+  type
+  user_id
+  target_id
+  target_type
+}
+
+class Friendship {
+  id
+  user_id
+  friend_id
+  status
+}
+
+class Conversation {
+  id
+}
+
+class Message {
+  id
+  content
+  is_read
+  user_id
+  conversation_id
+}
+
+class Notification {
+  id
+  type
+  data
+  read_at
+  user_id
 }
 
 ' ========================
-' RELATIONSHIPS
+' RELATIONSHIPS (human style)
 ' ========================
 
-' User Relationships
-User "1" -- "*" Question : "creates"
-User "1" -- "*" Comment : "writes"
-User "1" -- "*" Reaction : "reacts"
-User "1" -- "*" Spot : "proposes"
-User "1" -- "*" Event : "organizes"
-User "1" -- "*" Message : "sends"
-User "1" -- "*" Friendship : "initiates/receives"
-User "1" -- "*" Notification : "receives"
+User "1" -- "*" Question : posts
+User "1" -- "*" Comment : writes
+User "1" -- "*" Reaction : reacts
+User "1" -- "*" Message : sends
+User "1" -- "*" Friendship : connects
+User "1" -- "*" Event : organizes
+User "1" -- "*" Spot : creates
 
-' Social Relationships
-Question "1" -- "*" Comment : "has"
-Question "1" -- "*" Reaction : "has (polymorphic)"
-Comment "1" -- "*" Reaction : "has (polymorphic)"
+Event "*" -- "1" Spot : happens at
+Event "*" -- "1" User : organizer
 
-' Event Relationships
-Event "*" -- "*" User : "participants"
-Event "1" -- "*" Reaction : "has (polymorphic)"
+Question "1" -- "*" Comment
+Question "1" -- "*" Reaction
+Comment "1" -- "*" Reaction
 
-' Chat Relationships
-Conversation "1" -- "*" Message : "contains"
-Conversation "*" -- "*" User : "participants"
+Conversation "1" -- "*" Message
+
+User "2" -- "*" Conversation : chats
+User "*" -- "*" Event : joins
+
+' simple polymorphic idea
+Reaction "*" -- "*" Question
+Reaction "*" -- "*" Comment
+Reaction "*" -- "*" Event
 
 @enduml

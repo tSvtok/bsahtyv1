@@ -1,69 +1,65 @@
-@startuml B-SSAHTY Use Case Diagram
+@startuml
 
-skinparam actorStyle awesome
-skinparam packageStyle rectangle
-skinparam usecase {
-    BackgroundColor White
-    BorderColor Orange
-    ArrowColor Gray
+left to right direction
+
+actor Guest
+actor User
+actor Admin
+
+User --|> Guest
+Admin --|> User
+
+rectangle "B-SSAHTY Platform" {
+
+  (Register)
+  (Login)
+
+  (Edit Profile)
+  (View Feed)
+  (Post)
+  (Comment)
+  (Like)
+
+  (add Friends)
+  (Chat)
+
+  (Map & Spots)
+  (Create Spot)
+
+  (Create Event)
+  (Join Event)
+
+  (Admin Panel)
+  (Approve Spots)
+  (Ban Users)
 }
 
-actor "Guest" as guest
-actor "Athlete" as user
-actor "Admin" as admin
+' --- Guest ---
+Guest --> (Register)
+Guest --> (Login)
 
-user --|> guest
-admin --|> user
+' --- User ---
+User --> (Edit Profile)
+User --> (View Feed)
+User --> (Post)
+User --> (Comment)
+User --> (Like)
+User --> (add Friends)
+User --> (Chat)
+User --> (Map & Spots)
+User --> (Create Spot)
+User --> (Create Event)
+User --> (Join Event)
 
-package "B-SSAHTY Platform" {
-    package "Authentication" {
-        usecase "Register" as UC1
-        usecase "Login" as UC2
-        usecase "Manage Profile" as UC3
-    }
+' --- Admin ---
+Admin --> (Admin Panel)
+Admin --> (Approve Spots)
+Admin --> (Ban Users)
 
-    package "Social & Community" {
-        usecase "View Community Feed" as UC4
-        usecase "Create Post/Question" as UC5
-        usecase "Comment & React" as UC6
-        usecase "Manage Friendships" as UC7
-        usecase "Real-time Chat" as UC8
-        usecase "Receive Notifications" as UC16
-    }
-
-    package "Events & Spots" {
-        usecase "View Interactive Map" as UC9
-        usecase "Discover Sports Spots" as UC10
-        usecase "Propose New Spot" as UC17
-        usecase "Organize Match/Event" as UC11
-        usecase "Join/Leave Match" as UC12
-    }
-
-    package "Administration" {
-        usecase "View Platform Stats" as UC13
-        usecase "Approve/Reject Spots" as UC14
-        usecase "Moderate Users" as UC15
-    }
-}
-
-guest --> UC1
-guest --> UC2
-
-user --> UC3
-user --> UC4
-user --> UC5
-user --> UC6
-user --> UC7
-user --> UC8
-user --> UC9
-user --> UC10
-user --> UC11
-user --> UC12
-user --> UC16
-user --> UC17
-
-admin --> UC13
-admin --> UC14
-admin --> UC15
+' --- simple rule note ---
+note right of (add Friends)
+  A user can't add
+  the same friend twice
+end note
 
 @enduml
