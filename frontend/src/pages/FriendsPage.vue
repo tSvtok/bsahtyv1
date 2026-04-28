@@ -89,7 +89,7 @@
               </div>
               <div class="flex gap-2">
                 <button @click="handleRequest(req.id, 'ACCEPTED')" class="btn-primary !py-1.5 !px-4 !text-xs">Accept</button>
-                <button @click="handleRequest(req.id, 'REJECTED')" class="btn-secondary !py-1.5 !px-4 !text-xs">Decline</button>
+                <button @click="handleRequest(req.id, 'BLOCKED')" class="btn-secondary !py-1.5 !px-4 !text-xs">Decline</button>
               </div>
             </div>
           </div>

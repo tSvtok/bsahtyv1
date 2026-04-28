@@ -3,11 +3,11 @@
     <!-- Logo -->
     <router-link to="/" class="flex items-center gap-2 font-bold text-xl tracking-tight mr-4 shrink-0">
       <span class="w-8 h-8 rounded-xl bg-gradient-primary flex items-center justify-center text-white text-sm font-black shadow-md">B</span>
-      <span class="hidden sm:inline text-gray-900">B-SSAHTY</span>
+      <span class="hidden sm:inline text-gray-500">B-SSAHTY</span>
     </router-link>
 
     <!-- Search Bar -->
-    <div class="flex-1 max-w-md hidden md:block">
+    <div class="flex-1 max-w-md hidden md:block" v-if="$route.path !== '/'">
       <div class="relative">
         <button @click="handleSearch" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-orange-500 transition-colors z-10">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -97,7 +97,7 @@
         </router-link>
       </template>
       <template v-else>
-        <router-link to="/login"  class="btn-secondary !py-1.5 !px-4 !text-sm">Login</router-link>
+        <router-link to="/login"  class="btn-secondary !py-1.5 !px-4 !text-sm !bg-gray-200 !text-gray-600">Login</router-link>
         <router-link to="/register" class="btn-primary !py-1.5 !px-4 !text-sm">Join Free</router-link>
       </template>
     </div>

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreFriendshipRequest extends FormRequest
 {
@@ -14,7 +15,11 @@ class StoreFriendshipRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'friend_id' => ['required', 'exists:users,id', 'different:user_id'],
+            'friend_id' => [
+                'required',
+                'integer',
+                'exists:users,id',
+            ],
         ];
     }
 }

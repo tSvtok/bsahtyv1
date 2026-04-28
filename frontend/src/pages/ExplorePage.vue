@@ -64,15 +64,21 @@
             </div>
 
             <button 
-              v-if="!isFriend(user.id)"
+              v-if="getFriendshipStatus(user.id) === 'NONE'"
               @click="addFriend(user.id)"
               class="btn-primary !py-2 w-full text-xs"
-              :disabled="friendRequests.has(user.id)"
             >
-              {{ friendRequests.has(user.id) ? 'Request Sent' : 'Add Friend' }}
+              Add Friend
             </button>
             <button 
-              v-else
+              v-else-if="getFriendshipStatus(user.id) === 'PENDING'"
+              @click="cancelFriendRequest(user.id)"
+              class="btn-secondary !py-2 w-full text-xs text-orange-600 hover:text-red-600 hover:border-red-400"
+            >
+              Cancel Request
+            </button>
+            <button 
+              v-else-if="getFriendshipStatus(user.id) === 'ACCEPTED'"
               class="btn-secondary !py-2 w-full text-xs text-gray-400"
               disabled
             >
@@ -115,6 +121,23 @@ watch(searchQuery, () => {
 
 const filteredUsers = computed(() => users.value)
 
+function getFriendshipStatus(userId) {
+  const friendship = friendships.value.find(f => 
+    (f.user_id === auth.user?.id && f.friend_id === userId) ||
+    (f.friend_id === auth.user?.id && f.user_id === userId)
+  )
+  
+  if (!friendship) return 'NONE'
+  return friendship.status
+}
+
+function getFriendship(userId) {
+  return friendships.value.find(f => 
+    (f.user_id === auth.user?.id && f.friend_id === userId) ||
+    (f.friend_id === auth.user?.id && f.user_id === userId)
+  )
+}
+
 async function fetchData() {
   loading.value = true
   try {
@@ -122,7 +145,7 @@ async function fetchData() {
       api.get('/users', { params: { search: searchQuery.value } }),
       api.get('/friendships')
     ])
-    users.value = uRes.data.data
+    users.value = uRes.data.data.data || uRes.data.data
     friendships.value = fRes.data.data || []
   } catch (e) {
     console.error(e)
@@ -131,18 +154,27 @@ async function fetchData() {
   }
 }
 
-function isFriend(userId) {
-  return friendships.value.some(f => 
-    (f.user_id === auth.user?.id && f.friend_id === userId && f.status === 'ACCEPTED') ||
-    (f.friend_id === auth.user?.id && f.user_id === userId && f.status === 'ACCEPTED')
-  )
-}
-
 async function addFriend(userId) {
   try {
-    await api.post('/friendships', { friend_id: userId })
-    friendRequests.value.add(userId)
-  } catch (e) {}
+    const res = await api.post('/friendships', { friend_id: userId })
+    // Add the new friendship to the list
+    friendships.value.push(res.data.data)
+  } catch (e) {
+    console.error('Failed to send friend request', e)
+  }
+}
+
+async function cancelFriendRequest(userId) {
+  try {
+    const friendship = getFriendship(userId)
+    if (!friendship) return
+    
+    await api.delete(`/friendships/${friendship.id}`)
+    // Remove from friendships list
+    friendships.value = friendships.value.filter(f => f.id !== friendship.id)
+  } catch (e) {
+    console.error('Failed to cancel friend request', e)
+  }
 }
 
 onMounted(fetchData)

@@ -97,12 +97,12 @@
             <label class="label">Favourite Sports <span class="text-gray-400 font-normal">(pick 1+)</span></label>
             <div class="flex flex-wrap gap-2">
               <button
-                v-for="s in allSports" :key="s"
+                v-for="s in allSports" :key="s.value"
                 type="button"
                 @click="toggleSport(s)"
                 class="px-3 py-1 rounded-full text-xs font-semibold border transition-all"
-                :class="form.sports.includes(s) ? 'bg-orange-500 text-white border-orange-500' : 'border-gray-200 text-gray-600 hover:border-orange-300'"
-              >{{ s }}</button>
+                :class="isSportSelected(s) ? 'bg-orange-500 text-white border-orange-500' : 'border-gray-200 text-gray-600 hover:border-orange-300'"
+              >{{ s.label }}</button>
             </div>
           </div>
 
@@ -133,12 +133,27 @@ const showPwd = ref(false)
 const form   = reactive({ name: '', email: '', password: '', password_confirmation: '', city: '', sports: [] })
 const errors = reactive({ name: '', email: '', password: '', password_confirmation: '' })
 
-const allSports = ['Football', 'Basketball', 'Tennis', 'Volleyball', 'Running', 'Cycling', 'Padel', 'Swimming', 'Gym', 'Yoga']
+const allSports = [
+  { label: 'Football', value: 'FOOTBALL' },
+  { label: 'Basketball', value: 'BASKETBALL' },
+  { label: 'Tennis', value: 'TENNIS' },
+  { label: 'Volleyball', value: 'VOLLEYBALL' },
+  { label: 'Running', value: 'RUNNING' },
+  { label: 'Cycling', value: 'CYCLING' },
+  { label: 'Padel', value: 'PADEL' },
+  { label: 'Swimming', value: 'SWIMMING' },
+  { label: 'Fitness', value: 'FITNESS' },
+  { label: 'Yoga', value: 'YOGA' },
+]
 
-function toggleSport(s) {
-  const i = form.sports.indexOf(s)
-  if (i === -1) form.sports.push(s)
+function toggleSport(sport) {
+  const i = form.sports.indexOf(sport.value)
+  if (i === -1) form.sports.push(sport.value)
   else form.sports.splice(i, 1)
+}
+
+function isSportSelected(sport) {
+  return form.sports.includes(sport.value)
 }
 
 const passwordStrength = computed(() => {

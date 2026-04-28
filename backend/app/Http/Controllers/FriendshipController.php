@@ -13,18 +13,40 @@ class FriendshipController extends Controller
     {
         $user = $request->user();
         
-        $status = $request->input('status', FriendshipStatus::ACCEPTED->value);
+        $status = $request->input('status');
         
-        // Get friends where status is accepted
-        $friendships = Friendship::with(['user', 'friend'])
+        // Get friendships
+        $query = Friendship::with(['user', 'friend'])
             ->where(function ($query) use ($user) {
                 $query->where('user_id', $user->id)
                       ->orWhere('friend_id', $user->id);
-            })
-            ->where('status', $status)
-            ->get();
+            });
+        
+        // Filter by status if provided
+        if ($status) {
+            $query->where('status', $status);
+        }
+        
+        $friendships = $query->get();
 
         return response()->json(['data' => $friendships]);
+    }
+
+    public function checkStatus(Request $request, $userId)
+    {
+        $currentUserId = $request->user()->id;
+        
+        $friendship = Friendship::where(function ($query) use ($currentUserId, $userId) {
+            $query->where('user_id', $currentUserId)->where('friend_id', $userId);
+        })->orWhere(function ($query) use ($currentUserId, $userId) {
+            $query->where('user_id', $userId)->where('friend_id', $currentUserId);
+        })->first();
+
+        if (!$friendship) {
+            return response()->json(['data' => ['status' => 'NONE']]);
+        }
+
+        return response()->json(['data' => $friendship]);
     }
 
     public function store(StoreFriendshipRequest $request)
@@ -32,6 +54,11 @@ class FriendshipController extends Controller
         $validated = $request->validated();
         $userId = $request->user()->id;
         $friendId = $validated['friend_id'];
+
+        // Prevent self-friendship
+        if ($userId === $friendId) {
+            return response()->json(['message' => 'You cannot send a friend request to yourself.'], 400);
+        }
 
         // Prevent duplicate requests
         $existing = Friendship::where(function ($query) use ($userId, $friendId) {
@@ -50,7 +77,11 @@ class FriendshipController extends Controller
             'status' => FriendshipStatus::PENDING,
         ]);
 
-        broadcast(new \App\Events\FriendRequestReceived($friendship))->toOthers();
+        try {
+            broadcast(new \App\Events\FriendRequestReceived($friendship))->toOthers();
+        } catch (\Exception $e) {
+            \Log::warning('Failed to broadcast friend request: ' . $e->getMessage());
+        }
 
         return response()->json(['data' => $friendship], 201);
     }

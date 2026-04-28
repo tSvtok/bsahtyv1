@@ -25,6 +25,9 @@ class SpotController extends Controller
         if (isset($validated['status'])) {
             $spot->status = $validated['status'];
         }
+        if (isset($validated['image'])) {
+            $spot->image = $validated['image'];
+        }
 
         // Store coordinates as JSON for now
         if (isset($validated['latitude']) && isset($validated['longitude'])) {

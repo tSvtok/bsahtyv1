@@ -19,6 +19,7 @@ class StoreSpotRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'latitude' => ['required', 'numeric', 'between:-90,90'],
             'longitude' => ['required', 'numeric', 'between:-180,180'],
+            'image' => ['nullable', 'string', 'max:2048'],
             'status' => ['nullable', new Enum(LocationStatus::class)],
         ];
     }

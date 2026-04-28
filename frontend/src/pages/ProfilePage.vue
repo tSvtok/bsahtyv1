@@ -27,11 +27,11 @@
                 <button v-if="friendshipStatus === 'NONE'" @click="sendFriendRequest" class="btn-primary !py-1.5 !px-4 !text-sm mb-1">
                   Add Friend
                 </button>
-                <span v-else-if="friendshipStatus === 'PENDING'" class="badge badge-primary !py-2 !px-4 mb-1">
-                  Pending
-                </span>
+                <button v-else-if="friendshipStatus === 'PENDING'" @click="cancelFriendRequest" class="btn-secondary !py-1.5 !px-4 !text-sm mb-1 text-orange-600 hover:text-red-600 hover:border-red-400">
+                  Cancel Request
+                </button>
                 <button v-else-if="friendshipStatus === 'ACCEPTED'" @click="removeFriend" class="btn-secondary !py-1.5 !px-4 !text-sm mb-1 text-red-500">
-                  Friends
+                  Unfriend
                 </button>
                 <button @click="startConversation" class="btn-secondary !py-1.5 !px-4 !text-sm mb-1">Message</button>
                 
@@ -243,20 +243,27 @@ const joinedDate = computed(() => {
 })
 
 async function fetchProfile() {
-  if (isOwnProfile.value) return
+  if (isOwnProfile.value) {
+    friendship.value = null
+    return
+  }
   
   loading.value = true
   try {
+    // Fetch user profile
     const res = await api.get(`/users/${route.params.id}`)
     otherUser.value = res.data.data
     
-    // Check friendship status
-    const friendsRes = await api.get('/friendships')
-    const friendsList = friendsRes.data.data || []
-    friendship.value = friendsList.find(f => 
-      (f.user_id === auth.user?.id && f.friend_id === otherUser.value.id) ||
-      (f.friend_id === auth.user?.id && f.user_id === otherUser.value.id)
-    )
+    // Check friendship status with this specific user
+    const friendshipRes = await api.get(`/friendships/check/${route.params.id}`)
+    const data = friendshipRes.data.data
+    
+    // If status is 'NONE', set friendship to null, otherwise set the friendship object
+    if (data.status === 'NONE') {
+      friendship.value = null
+    } else {
+      friendship.value = data
+    }
   } catch (e) {
     console.error('Failed to fetch profile', e)
   } finally {
@@ -268,7 +275,24 @@ async function sendFriendRequest() {
   try {
     const res = await api.post('/friendships', { friend_id: user.value.id })
     friendship.value = res.data.data
-  } catch (e) {}
+    toastStore.show('Success', 'Friend request sent!')
+  } catch (e) {
+    console.error('Friend request error:', e.response?.data)
+    const errorMsg = e.response?.data?.message || e.response?.data?.errors?.friend_id?.[0] || 'Failed to send friend request'
+    toastStore.show('Error', errorMsg, 'error')
+  }
+}
+
+async function cancelFriendRequest() {
+  if (!friendship.value) return
+  try {
+    await api.delete(`/friendships/${friendship.value.id}`)
+    friendship.value = null
+    toastStore.show('Success', 'Friend request canceled')
+  } catch (e) {
+    console.error('Failed to cancel request', e)
+    toastStore.show('Error', 'Failed to cancel request', 'error')
+  }
 }
 
 async function removeFriend() {
@@ -276,7 +300,11 @@ async function removeFriend() {
   try {
     await api.delete(`/friendships/${friendship.value.id}`)
     friendship.value = null
-  } catch (e) {}
+    toastStore.show('Success', 'Removed from friends')
+  } catch (e) {
+    console.error('Failed to remove friend', e)
+    toastStore.show('Error', 'Failed to remove friend', 'error')
+  }
 }
 
 async function startConversation() {
@@ -296,7 +324,11 @@ async function banUserHandler() {
     await api.patch(`/admin/users/${user.value.id}/ban`, { 
       reason: banReason.value || null 
     })
-    user.value.is_banned = true
+    if (isOwnProfile.value) {
+      auth.user = { ...auth.user, is_banned: true }
+    } else {
+      otherUser.value = { ...otherUser.value, is_banned: true }
+    }
     showBanModal.value = false
     banReason.value = ''
     toastStore.show('Success', 'User banned successfully')
@@ -314,7 +346,11 @@ async function unbanUserHandler() {
   banLoading.value = true
   try {
     await api.patch(`/admin/users/${user.value.id}/unban`)
-    user.value.is_banned = false
+    if (isOwnProfile.value) {
+      auth.user = { ...auth.user, is_banned: false }
+    } else {
+      otherUser.value = { ...otherUser.value, is_banned: false }
+    }
     showBanModal.value = false
     toastStore.show('Success', 'User unbanned successfully')
   } catch (e) {

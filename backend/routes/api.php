@@ -53,6 +53,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/reactions', [ReactionController::class, 'store']);
 
     // Friendships
+    Route::get('/friendships/check/{user}', [FriendshipController::class, 'checkStatus']);
     Route::apiResource('friendships', FriendshipController::class)->except(['create', 'edit', 'show']);
 
     // Chat

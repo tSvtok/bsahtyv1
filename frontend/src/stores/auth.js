@@ -3,10 +3,11 @@ import { ref, computed, watch } from 'vue'
 import { authApi } from '@/services/api'
 
 export const useAuthStore = defineStore('auth', () => {
-  const token = ref(localStorage.getItem('bssahty_token') || null)
-  const user  = ref(null)
-  const loading = ref(false)
-  const error   = ref(null)
+  const token       = ref(localStorage.getItem('bssahty_token') || null)
+  const user        = ref(null)
+  const loading     = ref(false)
+  const error       = ref(null)
+  const fieldErrors = ref({})
 
   const isLoggedIn = computed(() => !!token.value)
 
@@ -36,8 +37,9 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function login(credentials) {
-    loading.value = true
-    error.value   = null
+    loading.value     = true
+    error.value       = null
+    fieldErrors.value = {}
     try {
       const res = await authApi.login(credentials)
       token.value = res.data.access_token
@@ -46,7 +48,9 @@ export const useAuthStore = defineStore('auth', () => {
       return true
     } catch (err) {
       if (err.response?.data?.errors) {
-        error.value = Object.values(err.response.data.errors).flat().join(' ')
+        fieldErrors.value = Object.fromEntries(
+          Object.entries(err.response.data.errors).map(([k, v]) => [k, v[0]])
+        )
       } else {
         error.value = err.response?.data?.message || 'Login failed.'
       }
@@ -57,8 +61,9 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function register(data) {
-    loading.value = true
-    error.value   = null
+    loading.value     = true
+    error.value       = null
+    fieldErrors.value = {}
     try {
       const res = await authApi.register(data)
       token.value = res.data.access_token
@@ -67,7 +72,9 @@ export const useAuthStore = defineStore('auth', () => {
       return true
     } catch (err) {
       if (err.response?.data?.errors) {
-        error.value = Object.values(err.response.data.errors).flat().join(' ')
+        fieldErrors.value = Object.fromEntries(
+          Object.entries(err.response.data.errors).map(([k, v]) => [k, v[0]])
+        )
       } else {
         error.value = err.response?.data?.message || 'Registration failed.'
       }
@@ -91,5 +98,5 @@ export const useAuthStore = defineStore('auth', () => {
     isReady.value = true
   }
 
-  return { token, user, loading, error, isLoggedIn, isReady, login, register, logout, fetchMe, waitForInit }
+  return { token, user, loading, error, fieldErrors, isLoggedIn, isReady, login, register, logout, fetchMe, waitForInit }
 })

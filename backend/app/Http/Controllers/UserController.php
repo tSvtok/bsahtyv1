@@ -21,7 +21,7 @@ class UserController extends Controller
 
         $users = $query->where('id', '!=', auth()->id())->paginate(20);
 
-        return response()->json($users);
+        return response()->json(['data' => $users]);
     }
 
     public function show(User $user)

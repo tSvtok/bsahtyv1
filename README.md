@@ -2,7 +2,7 @@
 
 B-SSAHTY is a modern social platform for athletes to connect, share their sports journey, find local matches, and discover sports spots. Built with **Laravel 12** and **Vue 3**, it focuses on high performance, mobile responsiveness, and a premium user experience.
 
-## 🚀 Features
+##  Features
 
 - **Dynamic Feed**: Share posts with images, tag sports, and interact with the community.
 - **Local Matches**: Organize or join sports events near you.
@@ -19,7 +19,7 @@ B-SSAHTY is a modern social platform for athletes to connect, share their sports
 - **Real-time**: Laravel Reverb
 - **Containerization**: Docker (multi-repo architecture)
 
-## 📦 Setup Instructions
+##  Setup Instructions
 
 ### Prerequisites
 - Docker & Docker Compose
@@ -51,18 +51,18 @@ See [DEV_WORKFLOW.md](DEV_WORKFLOW.md) for detailed development commands and [MI
 2. Run `npm install`.
 3. Start development server: `npm run dev`.
 
-## 🧪 Testing
+##  Testing
 
 Run backend feature tests:
 ```bash
 docker exec -u 1000 ecomcom-app php artisan test
 ```
 
-## 📂 Project Structure
+##  Project Structure
 
 - `backend/`: Laravel 12 API.
 - `frontend/`: Vue 3 SPA with Vite.
 - `shared/`: Shared assets or configurations (if applicable).
 
-## 📄 License
+##  License
 MIT
