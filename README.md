@@ -1,4 +1,4 @@
-# B-SSAHTY 🏅
+# B-SSAHTY 
 
 B-SSAHTY is a modern social platform for athletes to connect, share their sports journey, find local matches, and discover sports spots. Built with **Laravel 12** and **Vue 3**, it focuses on high performance, mobile responsiveness, and a premium user experience.
 
